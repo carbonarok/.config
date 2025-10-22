@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 set -euo pipefail
 trap 'echo "Error on line $LINENO"; exit 1' ERR
@@ -20,19 +21,6 @@ ensure_symlink() {
   else
     ln -s "$src" "$dest"
     echo "Created symlink: $dest -> $src"
-  fi
-}
-
-upsert_zshrc_var() {
-  # upsert_zshrc_var VAR_NAME "value with spaces allowed"
-  local name="$1"; shift
-  local value="$*"
-  local file="$HOME/.zshrc"
-  if grep -qE "^[[:space:]]*${name}=" "$file"; then
-    # replace existing assignment
-    sed -i "s|^[[:space:]]*${name}=.*|${name}=\"${value}\"|g" "$file"
-  else
-    echo "${name}=\"${value}\"" >> "$file"
   fi
 }
 
@@ -70,46 +58,8 @@ else
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
-# --- 4) Powerlevel10k theme (idempotent) ---
+# --- 4) Zsh plugins (idempotent) ---
 ZSH_CUSTOM_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
-THEMES_DIR="$ZSH_CUSTOM_DIR/themes"
-PL10K_DIR="$THEMES_DIR/powerlevel10k"
-
-if [ -d "$PL10K_DIR" ]; then
-  echo "Powerlevel10k already present. Skipping clone."
-else
-  echo "Installing Powerlevel10k..."
-  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$PL10K_DIR"
-fi
-
-# --- 5) Fonts (MesloLGS NF) ---
-echo "Installing MesloLGS Nerd Font..."
-mkdir -p "$HOME/.local/share/fonts"
-pushd "$HOME/.local/share/fonts" >/dev/null
-for f in \
-  "MesloLGS NF Regular.ttf" \
-  "MesloLGS NF Bold.ttf" \
-  "MesloLGS NF Italic.ttf" \
-  "MesloLGS NF Bold Italic.ttf"
-do
-  if [ -f "$f" ]; then
-    echo "Font $f exists. Skipping."
-  else
-    wget -q "https://github.com/romkatv/powerlevel10k-media/raw/master/${f// /%20}"
-  fi
-done
-fc-cache -fv >/dev/null
-popd >/dev/null
-
-# --- 6) Optional p10k config copy ---
-if [ -f "./other/.p10k.zsh" ]; then
-  echo "Copying p10k configuration..."
-  cp ./other/.p10k.zsh "$HOME/.p10k.zsh"
-else
-  echo "No ./other/.p10k.zsh found. You can create one later or run 'p10k configure'."
-fi
-
-# --- 7) Zsh plugins (idempotent) ---
 PLUG_DIR="$ZSH_CUSTOM_DIR/plugins"
 mkdir -p "$PLUG_DIR"
 
@@ -127,39 +77,86 @@ else
     "$PLUG_DIR/zsh-autosuggestions"
 fi
 
-# --- 8) Update ~/.zshrc: theme, plugins, p10k sourcing (idempotent) ---
+# --- 5) Update ~/.zshrc with SSH-aware plugin logic (no theme enforced) ---
 if [ ! -f "$HOME/.zshrc" ]; then
   echo "Creating empty ~/.zshrc"
   touch "$HOME/.zshrc"
 fi
 
-# Set theme
-upsert_zshrc_var ZSH_THEME "powerlevel10k/powerlevel10k"
+SSH_BLOCK_MARK="# >>> SSH_AWARE_PLUGINS (managed) >>>"
+if ! grep -qF "$SSH_BLOCK_MARK" "$HOME/.zshrc"; then
+  echo "Injecting SSH-aware plugin block into ~/.zshrc"
 
-# Ensure plugins list contains our plugins (merge-friendly)
-if grep -qE '^[[:space:]]*plugins=\(' "$HOME/.zshrc"; then
-  # Normalize to a single line for simple edits
-  sed -i ':a;N;$!ba;s/plugins=\([^\n]*\)\n\([^)]*\)/plugins=\1 \2/g' "$HOME/.zshrc"
-  sed -i 's/plugins=(/plugins=(git /' "$HOME/.zshrc"
-  for p in zsh-autosuggestions zsh-syntax-highlighting; do
-    grep -q "$p" "$HOME/.zshrc" || sed -i "s/plugins=(/plugins=(${p} /" "$HOME/.zshrc"
-  done
+  # Comment out any existing 'plugins=(...)' lines to prevent overrides.
+  # (We keep them as comments so you can reference/restore later.)
+  sed -i 's/^[[:space:]]*plugins=(/# (disabled by installer) &/' "$HOME/.zshrc"
+
+  # Prepend our managed block before the first oh-my-zsh sourcing if present; else just append at end.
+  if grep -qE 'oh-my-zsh\.sh' "$HOME/.zshrc"; then
+    # Insert block BEFORE first 'oh-my-zsh.sh' source line
+    awk -v block="$(cat <<'EOF'
+# >>> SSH_AWARE_PLUGINS (managed) >>>
+# Ensure UTF-8 locale (prevents glyph width issues)
+export LANG=${LANG:-en_GB.UTF-8}
+export LC_ALL=${LC_ALL:-en_GB.UTF-8}
+
+# Choose a leaner plugin set over SSH to reduce redraw/latency issues.
+if [[ -n $SSH_CONNECTION || -n $SSH_TTY ]]; then
+  plugins=(git)
 else
-  echo 'plugins=(git zsh-autosuggestions zsh-syntax-highlighting)' >> "$HOME/.zshrc"
+  plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+  # Autosuggestions tuning
+  ZSH_AUTOSUGGEST_USE_ASYNC=1
+  ZSH_AUTOSUGGEST_STRATEGY=(history)
+  ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+fi
+# <<< SSH_AWARE_PLUGINS (managed) <<<
+EOF
+)" '
+      BEGIN { printed=0 }
+      {
+        if (!printed && $0 ~ /oh-my-zsh\.sh/) {
+          print block
+          printed=1
+        }
+        print
+      }
+    ' "$HOME/.zshrc" > "$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
+  else
+    cat >>"$HOME/.zshrc" <<'EOF'
+
+# >>> SSH_AWARE_PLUGINS (managed) >>>
+export LANG=${LANG:-en_GB.UTF-8}
+export LC_ALL=${LC_ALL:-en_GB.UTF-8}
+
+if [[ -n $SSH_CONNECTION || -n $SSH_TTY ]]; then
+  plugins=(git)
+else
+  plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+  ZSH_AUTOSUGGEST_USE_ASYNC=1
+  ZSH_AUTOSUGGEST_STRATEGY=(history)
+  ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+fi
+# <<< SSH_AWARE_PLUGINS (managed) <<<
+EOF
+  fi
+else
+  echo "SSH-aware plugin block already present. Skipping."
 fi
 
-# Source p10k config if present
-if ! grep -q '^\s*\[\[ -r ~/.p10k.zsh \]\]' "$HOME/.zshrc"; then
+# Ensure OMZ bootstrap is present (do not enforce theme; let each system decide)
+if ! grep -qE 'oh-my-zsh\.sh' "$HOME/.zshrc"; then
   cat >>"$HOME/.zshrc" <<'EOF'
 
-# Powerlevel10k instant prompt and config
-# Enable instant prompt to speed up shell startup.
-if [[ -r ~/.zshrc.zni ]]; then source ~/.zshrc.zni; fi
-[[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh
+# Oh My Zsh bootstrap (theme is intentionally NOT enforced here)
+export ZSH="$HOME/.oh-my-zsh"
+[ -s "$ZSH/oh-my-zsh.sh" ] && source "$ZSH/oh-my-zsh.sh"
+
+# Faster, safer completion cache
+autoload -Uz compinit; compinit -C
 EOF
 fi
 
 echo "Done. Optional: make zsh your login shell with:"
 echo "  chsh -s \"$(command -v zsh)\""
-echo "Restart your terminal and set your terminal font to 'MesloLGS NF'."
-
+echo "Restart your terminal. Configure your preferred theme (e.g., powerlevel10k) per system."
