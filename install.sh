@@ -39,7 +39,7 @@ upsert_zshrc_var() {
 # --- 1) Base packages & Node.js ---
 if is_debian_like; then
   echo "Debian-based system detected. Installing dependencies..."
-  apt_install software-properties-common ca-certificates curl git wget gnupg lsb-release
+  apt_install software-properties-common ca-certificates curl git wget gnupg lsb-release fontconfig
   sudo -E add-apt-repository -y ppa:neovim-ppa/stable || true
   apt_install zsh neovim tmux ripgrep
 
