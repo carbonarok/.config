@@ -24,7 +24,6 @@ ensure_symlink() {
 }
 
 ensure_terminfo() {
-  # ensure_terminfo TERMNAME
   local term="$1"
   if infocmp "$term" >/dev/null 2>&1; then
     echo "terminfo for $term already present."
@@ -34,24 +33,19 @@ ensure_terminfo() {
   echo "Installing terminfo for $term..."
   case "$term" in
     xterm-kitty)
-      # Try official package first (Ubuntu/Debian)
       sudo -E apt-get install -y kitty-terminfo >/dev/null 2>&1 || true
       if ! infocmp "$term" >/dev/null 2>&1; then
-        # Fallback: compile from upstream source
         curl -fsSL https://raw.githubusercontent.com/kovidgoyal/kitty/master/terminfo/x/xterm-kitty | tic -x -
       fi
       ;;
     tmux-256color)
-      # Usually in ncurses-term
       sudo -E apt-get install -y ncurses-term >/dev/null 2>&1 || true
       if ! infocmp "$term" >/dev/null 2>&1; then
-        # Last resort: pull latest terminfo source and build
         curl -fsSL https://invisible-island.net/datafiles/current/terminfo.src.gz \
         | gunzip | tic -x -  >/dev/null 2>&1 || true
       fi
       ;;
     *)
-      # Generic attempt: try ncurses-term then invisible-island fallback
       sudo -E apt-get install -y ncurses-term >/dev/null 2>&1 || true
       if ! infocmp "$term" >/dev/null 2>&1; then
         curl -fsSL https://invisible-island.net/datafiles/current/terminfo.src.gz \
@@ -67,7 +61,6 @@ ensure_terminfo() {
   fi
 }
 
-# --- 1) Base packages & Node.js ---
 if is_debian_like; then
   echo "Debian-based system detected. Installing dependencies..."
   apt_install software-properties-common ca-certificates curl git wget gnupg lsb-release fontconfig build-essential pkg-config unzip
@@ -76,7 +69,6 @@ if is_debian_like; then
   sudo -E add-apt-repository -y ppa:neovim-ppa/unstable || true
   apt_install zsh neovim tmux ripgrep
 
-  # NodeSource (Node.js 20 LTS)
   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
   apt_install nodejs
 else
@@ -88,11 +80,9 @@ echo "Node/npm versions:"
 node -v || true
 npm -v || true
 
-# --- 2) Tmux symlink (idempotent) ---
 echo "Linking tmux config..."
 ensure_symlink "$HOME/.config/tmux/tmux.conf" "$HOME/.tmux.conf"
 
-# --- 3) Oh My Zsh (idempotent, non-interactive) ---
 if [ -d "$HOME/.oh-my-zsh" ]; then
   echo "Oh My Zsh already installed. Skipping."
 else
@@ -103,7 +93,6 @@ else
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
-# --- 4) Zsh plugins (idempotent) ---
 ZSH_CUSTOM_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 PLUG_DIR="$ZSH_CUSTOM_DIR/plugins"
 mkdir -p "$PLUG_DIR"
@@ -122,7 +111,6 @@ else
     "$PLUG_DIR/zsh-autosuggestions"
 fi
 
-# --- 5) Update ~/.zshrc with SSH-aware plugin logic (no theme enforced) ---
 if [ ! -f "$HOME/.zshrc" ]; then
   echo "Creating empty ~/.zshrc"
   touch "$HOME/.zshrc"
@@ -132,13 +120,9 @@ SSH_BLOCK_MARK="# >>> SSH_AWARE_PLUGINS (managed) >>>"
 if ! grep -qF "$SSH_BLOCK_MARK" "$HOME/.zshrc"; then
   echo "Injecting SSH-aware plugin block into ~/.zshrc"
 
-  # Comment out any existing 'plugins=(...)' lines to prevent overrides.
-  # (We keep them as comments so you can reference/restore later.)
   sed -i 's/^[[:space:]]*plugins=(/# (disabled by installer) &/' "$HOME/.zshrc"
 
-  # Prepend our managed block before the first oh-my-zsh sourcing if present; else just append at end.
   if grep -qE 'oh-my-zsh\.sh' "$HOME/.zshrc"; then
-    # Insert block BEFORE first 'oh-my-zsh.sh' source line
     awk -v block="$(cat <<'EOF'
 # >>> SSH_AWARE_PLUGINS (managed) >>>
 # Ensure UTF-8 locale (prevents glyph width issues)
@@ -189,7 +173,6 @@ else
   echo "SSH-aware plugin block already present. Skipping."
 fi
 
-# Ensure OMZ bootstrap is present (do not enforce theme; let each system decide)
 if ! grep -qE 'oh-my-zsh\.sh' "$HOME/.zshrc"; then
   cat >>"$HOME/.zshrc" <<'EOF'
 
@@ -202,5 +185,5 @@ autoload -Uz compinit; compinit -C
 EOF
 fi
 
-chsh -s \"$(command -v zsh)
+chsh -s $(command -v zsh)
 
