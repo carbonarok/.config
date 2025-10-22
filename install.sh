@@ -202,6 +202,5 @@ autoload -Uz compinit; compinit -C
 EOF
 fi
 
-echo "Done. Optional: make zsh your login shell with:"
-echo "  chsh -s \"$(command -v zsh)\""
-echo "Restart your terminal. Configure your preferred theme (e.g., powerlevel10k) per system."
+chsh -s \"$(command -v zsh)
+
