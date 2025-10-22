@@ -217,5 +217,6 @@ fi
 
 # --- Make zsh default shell ---
 chsh -s "$(command -v zsh)"
+sudo cp sync-system.sh /usr/local/bin/sync-system
 
 echo "Done"
