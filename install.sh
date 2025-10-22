@@ -71,10 +71,10 @@ ensure_terminfo() {
 # --- 1) Base packages & Node.js ---
 if is_debian_like; then
   echo "Debian-based system detected. Installing dependencies..."
-  apt_install software-properties-common ca-certificates curl git wget gnupg lsb-release fontconfig
+  apt_install software-properties-common ca-certificates curl git wget gnupg lsb-release fontconfig build-essential pkg-config unzip
   ensure_terminfo xterm-kitty
   ensure_terminfo tmux-256color
-  sudo -E add-apt-repository -y ppa:neovim-ppa/stable || true
+  sudo -E add-apt-repository -y ppa:neovim-ppa/unstable || true
   apt_install zsh neovim tmux ripgrep
 
   # NodeSource (Node.js 20 LTS)
