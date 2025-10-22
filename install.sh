@@ -24,10 +24,56 @@ ensure_symlink() {
   fi
 }
 
+ensure_terminfo() {
+  # ensure_terminfo TERMNAME
+  local term="$1"
+  if infocmp "$term" >/dev/null 2>&1; then
+    echo "terminfo for $term already present."
+    return 0
+  fi
+
+  echo "Installing terminfo for $term..."
+  case "$term" in
+    xterm-kitty)
+      # Try official package first (Ubuntu/Debian)
+      sudo -E apt-get install -y kitty-terminfo >/dev/null 2>&1 || true
+      if ! infocmp "$term" >/dev/null 2>&1; then
+        # Fallback: compile from upstream source
+        curl -fsSL https://raw.githubusercontent.com/kovidgoyal/kitty/master/terminfo/x/xterm-kitty | tic -x -
+      fi
+      ;;
+    tmux-256color)
+      # Usually in ncurses-term
+      sudo -E apt-get install -y ncurses-term >/dev/null 2>&1 || true
+      if ! infocmp "$term" >/dev/null 2>&1; then
+        # Last resort: pull latest terminfo source and build
+        curl -fsSL https://invisible-island.net/datafiles/current/terminfo.src.gz \
+        | gunzip | tic -x -  >/dev/null 2>&1 || true
+      fi
+      ;;
+    *)
+      # Generic attempt: try ncurses-term then invisible-island fallback
+      sudo -E apt-get install -y ncurses-term >/dev/null 2>&1 || true
+      if ! infocmp "$term" >/dev/null 2>&1; then
+        curl -fsSL https://invisible-island.net/datafiles/current/terminfo.src.gz \
+        | gunzip | tic -x -  >/dev/null 2>&1 || true
+      fi
+      ;;
+  esac
+
+  if infocmp "$term" >/dev/null 2>&1; then
+    echo "terminfo for $term installed."
+  else
+    echo "WARNING: terminfo for $term still missing; will add a runtime fallback."
+  fi
+}
+
 # --- 1) Base packages & Node.js ---
 if is_debian_like; then
   echo "Debian-based system detected. Installing dependencies..."
   apt_install software-properties-common ca-certificates curl git wget gnupg lsb-release fontconfig
+  ensure_terminfo xterm-kitty
+  ensure_terminfo tmux-256color
   sudo -E add-apt-repository -y ppa:neovim-ppa/stable || true
   apt_install zsh neovim tmux ripgrep
 
