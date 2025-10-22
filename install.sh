@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 set -euo pipefail
 trap 'echo "Error on line $LINENO"; exit 1' ERR
@@ -176,7 +177,7 @@ fi
 if ! grep -qE 'oh-my-zsh\.sh' "$HOME/.zshrc"; then
   cat >>"$HOME/.zshrc" <<'EOF'
 
-# Oh My Zsh bootstrap (theme is intentionally NOT enforced here)
+# Oh My Zsh bootstrap (theme is intentionally NOT enforced here earlier)
 export ZSH="$HOME/.oh-my-zsh"
 [ -s "$ZSH/oh-my-zsh.sh" ] && source "$ZSH/oh-my-zsh.sh"
 
@@ -185,5 +186,26 @@ autoload -Uz compinit; compinit -C
 EOF
 fi
 
-chsh -s $(command -v zsh)
+if grep -qE '^[[:space:]]*ZSH_THEME=' "$HOME/.zshrc"; then
+  sed -i 's|^[[:space:]]*ZSH_THEME=.*|ZSH_THEME="powerlevel10k/powerlevel10k"|' "$HOME/.zshrc"
+else
+  if grep -n 'oh-my-zsh\.sh' "$HOME/.zshrc" >/dev/null 2>&1; then
+    line=$(grep -n 'oh-my-zsh\.sh' "$HOME/.zshrc" | head -n1 | cut -d: -f1)
+    awk -v L="$line" 'NR==L{print "ZSH_THEME=\"powerlevel10k/powerlevel10k\""}{print}' "$HOME/.zshrc" > "$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
+  else
+    echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> "$HOME/.zshrc"
+  fi
+fi
+
+if ! grep -q '^\s*\[\[ -r ~/.p10k.zsh \]\]' "$HOME/.zshrc"; then
+  cat >>"$HOME/.zshrc" <<'EOF'
+
+# Powerlevel10k user config (only if present)
+[[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh
+EOF
+fi
+
+chsh -s "$(command -v zsh)"
+
+echo "Configured login shell to zsh."
 
