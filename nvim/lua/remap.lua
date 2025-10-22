@@ -31,6 +31,8 @@ end
 local opts = { noremap = true, silent = true }
 
 map('n', '<C-s>', '<cmd>w<CR>', opts)
+map('i', '<C-s>', '<cmd>w<CR><ESC>', opts)
+
 vim.keymap.set({ 'n', 'v' }, '<leader>gf', function()
   require('git_branch').files()
 end)
