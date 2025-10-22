@@ -42,14 +42,14 @@ ensure_terminfo() {
       sudo -E apt-get install -y ncurses-term >/dev/null 2>&1 || true
       if ! infocmp "$term" >/dev/null 2>&1; then
         curl -fsSL https://invisible-island.net/datafiles/current/terminfo.src.gz \
-        | gunzip | tic -x -  >/dev/null 2>&1 || true
+        | gunzip | tic -x - >/dev/null 2>&1 || true
       fi
       ;;
     *)
       sudo -E apt-get install -y ncurses-term >/dev/null 2>&1 || true
       if ! infocmp "$term" >/dev/null 2>&1; then
         curl -fsSL https://invisible-island.net/datafiles/current/terminfo.src.gz \
-        | gunzip | tic -x -  >/dev/null 2>&1 || true
+        | gunzip | tic -x - >/dev/null 2>&1 || true
       fi
       ;;
   esac
@@ -61,6 +61,7 @@ ensure_terminfo() {
   fi
 }
 
+# --- Base setup ---
 if is_debian_like; then
   echo "Debian-based system detected. Installing dependencies..."
   apt_install software-properties-common ca-certificates curl git wget gnupg lsb-release fontconfig build-essential pkg-config unzip
@@ -69,6 +70,7 @@ if is_debian_like; then
   sudo -E add-apt-repository -y ppa:neovim-ppa/unstable || true
   apt_install zsh neovim tmux ripgrep
 
+  # Node.js 20
   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
   apt_install nodejs
 else
@@ -83,6 +85,7 @@ npm -v || true
 echo "Linking tmux config..."
 ensure_symlink "$HOME/.config/tmux/tmux.conf" "$HOME/.tmux.conf"
 
+# --- Oh My Zsh ---
 if [ -d "$HOME/.oh-my-zsh" ]; then
   echo "Oh My Zsh already installed. Skipping."
 else
@@ -93,10 +96,22 @@ else
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
+# --- Plugins ---
 ZSH_CUSTOM_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 PLUG_DIR="$ZSH_CUSTOM_DIR/plugins"
-mkdir -p "$PLUG_DIR"
+THEMES_DIR="$ZSH_CUSTOM_DIR/themes"
+mkdir -p "$PLUG_DIR" "$THEMES_DIR"
 
+# Install Powerlevel10k if missing
+if [ -d "$THEMES_DIR/powerlevel10k" ]; then
+  echo "Powerlevel10k already installed."
+else
+  echo "Installing Powerlevel10k..."
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+    "$THEMES_DIR/powerlevel10k"
+fi
+
+# zsh plugins
 if [ -d "$PLUG_DIR/zsh-syntax-highlighting" ]; then
   echo "zsh-syntax-highlighting present."
 else
@@ -111,11 +126,13 @@ else
     "$PLUG_DIR/zsh-autosuggestions"
 fi
 
+# --- Ensure ~/.zshrc exists ---
 if [ ! -f "$HOME/.zshrc" ]; then
   echo "Creating empty ~/.zshrc"
   touch "$HOME/.zshrc"
 fi
 
+# --- SSH-aware plugins block ---
 SSH_BLOCK_MARK="# >>> SSH_AWARE_PLUGINS (managed) >>>"
 if ! grep -qF "$SSH_BLOCK_MARK" "$HOME/.zshrc"; then
   echo "Injecting SSH-aware plugin block into ~/.zshrc"
@@ -125,7 +142,6 @@ if ! grep -qF "$SSH_BLOCK_MARK" "$HOME/.zshrc"; then
   if grep -qE 'oh-my-zsh\.sh' "$HOME/.zshrc"; then
     awk -v block="$(cat <<'EOF'
 # >>> SSH_AWARE_PLUGINS (managed) >>>
-# Ensure UTF-8 locale (prevents glyph width issues)
 export LANG=${LANG:-en_GB.UTF-8}
 export LC_ALL=${LC_ALL:-en_GB.UTF-8}
 
@@ -134,7 +150,6 @@ if [[ -n $SSH_CONNECTION || -n $SSH_TTY ]]; then
   plugins=(git)
 else
   plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
-  # Autosuggestions tuning
   ZSH_AUTOSUGGEST_USE_ASYNC=1
   ZSH_AUTOSUGGEST_STRATEGY=(history)
   ZSH_AUTOSUGGEST_MANUAL_REBIND=1
@@ -173,29 +188,25 @@ else
   echo "SSH-aware plugin block already present. Skipping."
 fi
 
+# --- OMZ bootstrap ---
 if ! grep -qE 'oh-my-zsh\.sh' "$HOME/.zshrc"; then
   cat >>"$HOME/.zshrc" <<'EOF'
 
-# Oh My Zsh bootstrap (theme is intentionally NOT enforced here earlier)
+# Oh My Zsh bootstrap
 export ZSH="$HOME/.oh-my-zsh"
 [ -s "$ZSH/oh-my-zsh.sh" ] && source "$ZSH/oh-my-zsh.sh"
-
-# Faster, safer completion cache
 autoload -Uz compinit; compinit -C
 EOF
 fi
 
+# --- Set theme to Powerlevel10k ---
 if grep -qE '^[[:space:]]*ZSH_THEME=' "$HOME/.zshrc"; then
   sed -i 's|^[[:space:]]*ZSH_THEME=.*|ZSH_THEME="powerlevel10k/powerlevel10k"|' "$HOME/.zshrc"
 else
-  if grep -n 'oh-my-zsh\.sh' "$HOME/.zshrc" >/dev/null 2>&1; then
-    line=$(grep -n 'oh-my-zsh\.sh' "$HOME/.zshrc" | head -n1 | cut -d: -f1)
-    awk -v L="$line" 'NR==L{print "ZSH_THEME=\"powerlevel10k/powerlevel10k\""}{print}' "$HOME/.zshrc" > "$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
-  else
-    echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> "$HOME/.zshrc"
-  fi
+  echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> "$HOME/.zshrc"
 fi
 
+# --- Source ~/.p10k.zsh if present ---
 if ! grep -q '^\s*\[\[ -r ~/.p10k.zsh \]\]' "$HOME/.zshrc"; then
   cat >>"$HOME/.zshrc" <<'EOF'
 
@@ -204,7 +215,7 @@ if ! grep -q '^\s*\[\[ -r ~/.p10k.zsh \]\]' "$HOME/.zshrc"; then
 EOF
 fi
 
+# --- Make zsh default shell ---
 chsh -s "$(command -v zsh)"
 
-echo "Configured login shell to zsh."
-
+echo "Done"
