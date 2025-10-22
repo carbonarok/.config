@@ -65,6 +65,15 @@ return {
         --  the definition of its *type*, not where it was *defined*.
         map('grt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
 
+        -- Copy error froom LSP to clipboard
+        map('grc', function()
+          local err = vim.lsp.diagnostic.get_line_diagnostics()
+          if err ~= nil and #err > 0 then
+            local err_msg = err[1].message
+            vim.fn.setreg('+', err_msg)
+          end
+        end, '[G]oto [C]opy Error')
+
         -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
         ---@param client vim.lsp.Client
         ---@param method vim.lsp.protocol.Method

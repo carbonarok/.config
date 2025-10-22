@@ -58,6 +58,9 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
+vim.o.termguicolors = true
+vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions'
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -547,7 +550,7 @@ require('lazy').setup({
   },
 
   require('plugins.nvim-lspconfig'),
-  require('plugins.nvim-dap'),
+  -- require('plugins.nvim-dap'),
   require('plugins.nvim-treesitter'),
   require('plugins.neo-tree'),
   require('plugins.bufferline'),
@@ -558,11 +561,12 @@ require('lazy').setup({
   require('plugins.comment'),
   require('plugins.betterTerm'),
   require('plugins.galaxyline'),
-  require('plugins.cursorline'),
+  -- require('plugins.cursorline'),
   require('plugins.log-highlight'),
   require('plugins.project'),
   require('plugins.supermaven'),
-  require('kickstart.plugins.debug'),
+  require('plugins.auto-session'),
+  -- require('kickstart.plugins.debug'),
   require('kickstart.plugins.indent_line'),
   require('kickstart.plugins.lint'),
   require('kickstart.plugins.autopairs'),

@@ -63,5 +63,15 @@ map('n', '<leader>8', '<cmd>BufferLineGoToBuffer 8<CR>', opts)
 map('n', '<leader>9', '<cmd>BufferLineGoToBuffer 9<CR>', opts)
 map('n', '<leader>0', '<cmd>BufferLineGoToBuffer 10<CR>', opts)
 
--- Save and escape to normal mode
-map('i', '<C-s>', '<cmd>w<CR><Esc>', opts)
+-- Close all but current
+vim.keymap.set('n', '<leader>bo', ':BufferLineCloseOthers<CR>', { desc = 'Close others' })
+
+-- Close left/right
+vim.keymap.set('n', '<leader>bh', ':BufferLineCloseLeft<CR>', { desc = 'Close left' })
+vim.keymap.set('n', '<leader>bl', ':BufferLineCloseRight<CR>', { desc = 'Close right' })
+
+-- Close current (safe)
+vim.keymap.set('n', '<leader>bc', ':bdelete<CR>', { desc = 'Close current buffer' })
+
+-- Close ALL (custom)
+vim.keymap.set('n', '<leader>ba', ':%bd|e#<CR>', { desc = 'Close all buffers' })

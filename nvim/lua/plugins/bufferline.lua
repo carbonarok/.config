@@ -1,9 +1,9 @@
 return {
   'akinsho/bufferline.nvim',
   opts = {
-	options = {
-			mode = "buffers",
-		}
-	},
+    options = {
+      mode = 'buffers',
+    },
+  },
   lazy = false,
 }
