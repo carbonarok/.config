@@ -14,7 +14,7 @@ return {
     },
     search = {
       my_venvs = {
-        command = 'fd python$ /Users/opti-mac/Library/Caches/pypoetry/virtualenvs/', -- Sample command, need to be changed for your own venvs
+        command = 'fd -t f -t l python$ $(poetry config virtualenvs.path || true) ./',
         -- If you put the callback here, its only called for your "my_venvs" search
       },
     },
