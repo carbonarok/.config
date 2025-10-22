@@ -64,7 +64,7 @@ ensure_terminfo() {
 # --- Base setup ---
 if is_debian_like; then
   echo "Debian-based system detected. Installing dependencies..."
-  apt_install software-properties-common ca-certificates curl git wget gnupg lsb-release fontconfig build-essential pkg-config unzip
+  apt_install software-properties-common ca-certificates curl git wget gnupg lsb-release fontconfig build-essential pkg-config unzip fd-find
   ensure_terminfo xterm-kitty
   ensure_terminfo tmux-256color
   sudo -E add-apt-repository -y ppa:neovim-ppa/unstable || true

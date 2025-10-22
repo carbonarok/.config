@@ -1,12 +1,21 @@
 vim.keymap.set('n', '<leader>/', function()
-  require('telescope.builtin').live_grep {
-    prompt_title = '🔍 Search in all files',
-    cwd = vim.loop.cwd(), -- current workspace root
-    additional_args = function()
-      return { '--hidden', '--no-ignore' } -- include .gitignored + hidden files
-    end,
-  }
-end, { desc = 'Search all files (like VSCode Ctrl+Shift+F)' })
+  require('telescope.builtin').live_grep({
+    prompt_title = '🔍 Search in files',
+    cwd = vim.loop.cwd(),
+  })
+end, { desc = 'Search all files' })
+
+vim.keymap.set('n', '<leader>t', function()
+  require('telescope.builtin').keymaps()
+end, { desc = 'Search keymaps' })
+
+vim.keymap.set('n', '<leader>f', function()
+  require('telescope.builtin').find_files()
+end, { desc = 'Search files' })
+
+vim.keymap.set('n', '<leader>s', function()
+  require('telescope.builtin').grep_string()
+end, { desc = 'Search string' })
 
 local function map(mode, lhs, rhs, opts)
   local options = { noremap = true, silent = true }
