@@ -64,7 +64,7 @@ ensure_terminfo() {
 # --- Base setup ---
 if is_debian_like; then
   echo "Debian-based system detected. Installing dependencies..."
-  apt_install software-properties-common ca-certificates curl git wget gnupg lsb-release fontconfig build-essential pkg-config unzip fd-find
+  apt_install software-properties-common ca-certificates curl git wget gnupg lsb-release fontconfig build-essential pkg-config unzip fd-find pipx
   ensure_terminfo xterm-kitty
   ensure_terminfo tmux-256color
   sudo -E add-apt-repository -y ppa:neovim-ppa/unstable || true
@@ -84,6 +84,9 @@ npm -v || true
 
 echo "Linking tmux config..."
 ensure_symlink "$HOME/.config/tmux/tmux.conf" "$HOME/.tmux.conf"
+
+echo "Installing tmuxp..."
+pipx install tmuxp
 
 # --- Oh My Zsh ---
 if [ -d "$HOME/.oh-my-zsh" ]; then
