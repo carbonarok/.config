@@ -1,0 +1,58 @@
+vim.keymap.set('n', '<leader>/', function()
+  require('telescope.builtin').live_grep {
+    prompt_title = '🔍 Search in all files',
+    cwd = vim.loop.cwd(), -- current workspace root
+    additional_args = function()
+      return { '--hidden', '--no-ignore' } -- include .gitignored + hidden files
+    end,
+  }
+end, { desc = 'Search all files (like VSCode Ctrl+Shift+F)' })
+
+local function map(mode, lhs, rhs, opts)
+  local options = { noremap = true, silent = true }
+  if opts then
+    if opts.desc then
+      opts.desc = 'keymaps.lua: ' .. opts.desc
+    end
+    options = vim.tbl_extend('force', options, opts)
+  end
+  vim.keymap.set(mode, lhs, rhs, options)
+end
+
+local opts = { noremap = true, silent = true }
+
+map('n', '<C-s>', '<cmd>w<CR>', opts)
+vim.keymap.set({ 'n', 'v' }, '<leader>gf', function()
+  require('git_branch').files()
+end)
+
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
+
+map('n', '<C-u>', '<C-u>zz', opts)
+map('n', '<C-d>', '<C-d>zz', opts)
+
+map('x', '<leader>p', '"_dP')
+map('n', '<leader>gs', '<cmd>Telescope git_status<CR>', opts)
+map('n', '<leader>r', '<cmd>source $MYVIMRC<CR>', opts)
+
+-- Window moving
+map('n', '<leader>wh', '<C-w>H', opts)
+map('n', '<leader>wj', '<C-w>J', opts)
+map('n', '<leader>wk', '<C-w>K', opts)
+map('n', '<leader>wl', '<C-w>L', opts)
+
+-- Buffer switching
+map('n', '<leader>1', '<cmd>BufferLineGoToBuffer 1<CR>', opts)
+map('n', '<leader>2', '<cmd>BufferLineGoToBuffer 2<CR>', opts)
+map('n', '<leader>3', '<cmd>BufferLineGoToBuffer 3<CR>', opts)
+map('n', '<leader>4', '<cmd>BufferLineGoToBuffer 4<CR>', opts)
+map('n', '<leader>5', '<cmd>BufferLineGoToBuffer 5<CR>', opts)
+map('n', '<leader>6', '<cmd>BufferLineGoToBuffer 6<CR>', opts)
+map('n', '<leader>7', '<cmd>BufferLineGoToBuffer 7<CR>', opts)
+map('n', '<leader>8', '<cmd>BufferLineGoToBuffer 8<CR>', opts)
+map('n', '<leader>9', '<cmd>BufferLineGoToBuffer 9<CR>', opts)
+map('n', '<leader>0', '<cmd>BufferLineGoToBuffer 10<CR>', opts)
+
+-- Save and escape to normal mode
+map('i', '<C-s>', '<cmd>w<CR><Esc>', opts)

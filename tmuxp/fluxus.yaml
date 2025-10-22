@@ -1,0 +1,26 @@
+session_name: fluxus
+start_directory: /Users/opti-mac/Projects/opticoreit/fluxus
+
+windows:
+  - window_name: editor
+    start_directory: .
+    panes:
+      - shell_command:
+          - nvim .
+        focus: true
+
+  - window_name: services
+    start_directory: .
+    layout: tiled
+    panes:
+      - shell_command:
+          - fluxus-server runserver 0.0.0.0:8000
+
+      - shell_command:
+          - cd frontend
+          - npm install
+          - npm start
+
+      - shell_command:
+          - cd backend
+          - fluxus-server celery worker core --loglevel=info --pool=solo --concurrency=1
