@@ -25,9 +25,9 @@ return {
         handler = function()
           vim.opt_local.number = true
           vim.opt_local.relativenumber = true
-          vim.cmd [[
+          vim.cmd([[
           setlocal relativenumber
-        ]]
+        ]])
         end,
       },
     },
@@ -57,7 +57,8 @@ return {
     },
     window = { use_default_mappings = true },
     filesystem = {
-      follow_current_file = { enabled = true },
+      -- follow_current_file = { enabled = true },
+      follow_current_file = { enabled = true, leave_dirs_open = true },
       bind_to_cwd = true,
       buffers = {
         follow_current_file = true,

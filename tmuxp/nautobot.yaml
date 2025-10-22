@@ -1,0 +1,25 @@
+session_name: nautobot
+start_directory: /Users/opti-mac/Projects/nautobot/nautobot
+
+windows:
+  - window_name: editor
+    start_directory: .
+    panes:
+      - shell_command:
+          - nvim .
+        focus: true
+
+  - window_name: services
+    start_directory: .
+    layout: tiled
+    panes:
+      - shell_command:
+          - eval $(poetry env activate)
+          - nautobot-server runserver 0.0.0.0:8000
+
+      - shell_command:
+          - eval $(poetry env activate)
+
+      - shell_command:
+          - eval $(poetry env activate)
+          - nautobot-server celery worker core --loglevel=info --pool=solo --concurrency=1

@@ -1,0 +1,26 @@
+session_name: nwg-nautobot
+start_directory: ~/projects/nautobot/nwg-nautobot
+
+windows:
+  - window_name: editor
+    start_directory: .
+    panes:
+      - shell_command:
+          - nvim .
+        focus: true
+
+  - window_name: services
+    start_directory: .
+    layout: tiled
+    panes:
+      - shell_command:
+          - source venv/bin/activate
+          - nautobot-server runserver 0.0.0.0:8000
+
+      - shell_command:
+          - source venv/bin/activate
+
+      - shell_command:
+          - source venv/bin/activate
+          - nautobot-server celery worker core --loglevel=info --pool=solo --concurrency=1
+
