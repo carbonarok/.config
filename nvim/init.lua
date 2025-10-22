@@ -117,10 +117,10 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
-local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
-  local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
+  local out = vim.fn.system({ 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath })
   if vim.v.shell_error ~= 0 then
     error('Error cloning lazy.nvim:\n' .. out)
   end
@@ -227,7 +227,7 @@ require('lazy').setup({
         -- `cond` is a condition used to determine whether this plugin should be
         -- installed and loaded.
         cond = function()
-          return vim.fn.executable 'make' == 1
+          return vim.fn.executable('make') == 1
         end,
       },
       { 'nvim-telescope/telescope-ui-select.nvim' },
@@ -257,8 +257,8 @@ require('lazy').setup({
 
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()
-      local telescope = require 'telescope.actions'
-      require('telescope').setup {
+      local telescope = require('telescope.actions')
+      require('telescope').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
@@ -273,14 +273,14 @@ require('lazy').setup({
             require('telescope.themes').get_dropdown(),
           },
         },
-      }
+      })
 
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
 
       -- See `:help telescope.builtin`
-      local builtin = require 'telescope.builtin'
+      local builtin = require('telescope.builtin')
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
@@ -295,24 +295,24 @@ require('lazy').setup({
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
-        builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+        builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown({
           winblend = 10,
           previewer = false,
-        })
+        }))
       end, { desc = '[/] Fuzzily search in current buffer' })
 
       -- It's also possible to pass additional configuration options.
       --  See `:help telescope.builtin.live_grep()` for information about particular keys
       vim.keymap.set('n', '<leader>s/', function()
-        builtin.live_grep {
+        builtin.live_grep({
           grep_open_files = true,
           prompt_title = 'Live Grep in Open Files',
-        }
+        })
       end, { desc = '[S]earch [/] in Open Files' })
 
       -- Shortcut for searching your Neovim configuration files
       vim.keymap.set('n', '<leader>sn', function()
-        builtin.find_files { cwd = vim.fn.stdpath 'config' }
+        builtin.find_files({ cwd = vim.fn.stdpath('config') })
       end, { desc = '[S]earch [N]eovim files' })
     end,
   },
@@ -339,7 +339,7 @@ require('lazy').setup({
       {
         '<leader>f',
         function()
-          require('conform').format { async = true, lsp_format = 'fallback' }
+          require('conform').format({ async = true, lsp_format = 'fallback' })
         end,
         mode = '',
         desc = '[F]ormat buffer',
@@ -410,7 +410,7 @@ require('lazy').setup({
           -- Build Step is needed for regex support in snippets.
           -- This step is not supported in many windows environments.
           -- Remove the below condition to re-enable on windows.
-          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
+          if vim.fn.has('win32') == 1 or vim.fn.executable('make') == 0 then
             return
           end
           return 'make install_jsregexp'
@@ -515,11 +515,16 @@ require('lazy').setup({
     'rebelot/kanagawa.nvim',
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme 'kanagawa'
+      vim.cmd.colorscheme('kanagawa')
     end,
   },
 
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  {
+    'folke/todo-comments.nvim',
+    event = 'VimEnter',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    opts = { signs = false },
+  },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
@@ -530,7 +535,7 @@ require('lazy').setup({
       --  - va)  - [V]isually select [A]round [)]paren
       --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
       --  - ci'  - [C]hange [I]nside [']quote
-      require('mini.ai').setup { n_lines = 500 }
+      require('mini.ai').setup({ n_lines = 500 })
 
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --
@@ -541,27 +546,27 @@ require('lazy').setup({
     end,
   },
 
-  require 'plugins.nvim-lspconfig',
-  require 'plugins.nvim-dap',
-  require 'plugins.nvim-treesitter',
-  require 'plugins.neo-tree',
-  require 'plugins.bufferline',
-  require 'plugins.venv-selector',
+  require('plugins.nvim-lspconfig'),
+  require('plugins.nvim-dap'),
+  require('plugins.nvim-treesitter'),
+  require('plugins.neo-tree'),
+  require('plugins.bufferline'),
+  require('plugins.venv-selector'),
   -- require 'plugins.toggleterm',
-  require 'plugins.harpoon',
-  require 'plugins.vim-visual-multi',
-  require 'plugins.comment',
-  require 'plugins.betterTerm',
-  require 'plugins.galaxyline',
-  require 'plugins.cursorline',
-  require 'plugins.log-highlight',
-  require 'plugins.project',
-  require 'plugins.supermaven',
-  require 'kickstart.plugins.debug',
-  require 'kickstart.plugins.indent_line',
-  require 'kickstart.plugins.lint',
-  require 'kickstart.plugins.autopairs',
-  require 'kickstart.plugins.gitsigns',
+  require('plugins.harpoon'),
+  require('plugins.vim-visual-multi'),
+  require('plugins.comment'),
+  require('plugins.betterTerm'),
+  require('plugins.galaxyline'),
+  require('plugins.cursorline'),
+  require('plugins.log-highlight'),
+  require('plugins.project'),
+  require('plugins.supermaven'),
+  require('kickstart.plugins.debug'),
+  require('kickstart.plugins.indent_line'),
+  require('kickstart.plugins.lint'),
+  require('kickstart.plugins.autopairs'),
+  require('kickstart.plugins.gitsigns'),
 }, {
   ui = {
     icons = vim.g.have_nerd_font and {} or {
@@ -582,4 +587,4 @@ require('lazy').setup({
   },
 })
 
-require 'remap'
+require('remap')
