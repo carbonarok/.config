@@ -59,7 +59,7 @@ vim.o.scrolloff = 10
 vim.o.confirm = true
 
 vim.o.termguicolors = true
-vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions'
+vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,localoptions'
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
