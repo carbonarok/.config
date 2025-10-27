@@ -22,8 +22,9 @@ windows:
           - npm start
 
       - shell_command:
+          - printf "\033]2;celery\007"
           - cd backend/fluxus/
-          - fluxus-server celery -A core --loglevel=info --pool=solo --concurrency=1
+          - fluxus-server celery -A core worker --loglevel=info --pool=solo --concurrency=1
 
   - window_name: lazygit
     start_directory: .

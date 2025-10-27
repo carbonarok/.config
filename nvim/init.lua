@@ -9,7 +9,6 @@ vim.o.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
 
-
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
@@ -268,10 +267,10 @@ require('lazy').setup({
         defaults = {
           mappings = {
             -- n = { ['<Space>'] = telescope.select_default },
-	    n = {
-	      ["<C-q>"] = false,
-	      ["<leader>s"] = telescope.send_to_qflist + telescope.open_qflist,
-	    },
+            n = {
+              ['<C-q>'] = false,
+              ['<leader>s'] = telescope.send_to_qflist + telescope.open_qflist,
+            },
           },
         },
         -- pickers = {}
@@ -493,14 +492,12 @@ require('lazy').setup({
   require('plugins.neo-tree'),
   require('plugins.bufferline'),
   require('plugins.venv-selector'),
-  -- require 'plugins.toggleterm',
   require('plugins.harpoon'),
   require('plugins.vim-visual-multi'),
   require('plugins.comment'),
   require('plugins.betterTerm'),
   require('plugins.galaxyline'),
   require('plugins.cspell'),
-  -- require('plugins.cursorline'),
   require('plugins.log-highlight'),
   require('plugins.project'),
   require('plugins.supermaven'),
@@ -534,3 +531,4 @@ require('lazy').setup({
 
 require('remap')
 require('python-debug')
+require('custom.tmux')

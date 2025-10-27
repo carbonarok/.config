@@ -21,6 +21,7 @@ windows:
           - eval $(poetry env activate)
 
       - shell_command:
+          - printf "\033]2;celery\007"
           - eval $(poetry env activate)
           - nautobot-server celery -A core worker --loglevel=info --pool=solo --concurrency=1
 

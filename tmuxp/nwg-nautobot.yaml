@@ -21,6 +21,7 @@ windows:
           - source venv/bin/activate
 
       - shell_command:
+          - printf "\033]2;celery\007"
           - source venv/bin/activate
           - nautobot-server celery -A core worker --loglevel=info --pool=solo --concurrency=1
 

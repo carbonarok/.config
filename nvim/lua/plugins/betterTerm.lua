@@ -17,13 +17,6 @@ return {
       end,
       desc = 'Open BetterTerm 1',
     },
-    {
-      '<leader>tt',
-      function()
-        require('betterTerm').select()
-      end,
-      desc = 'Select terminal',
-    },
   },
   opts = {
     position = 'bot',

@@ -5,7 +5,7 @@ vim.keymap.set('n', '<leader>/', function()
   })
 end, { desc = 'Search all files' })
 
-vim.keymap.set('n', '<leader>t', function()
+vim.keymap.set('n', '<leader>k', function()
   require('telescope.builtin').keymaps()
 end, { desc = 'Search keymaps' })
 
@@ -83,5 +83,9 @@ vim.keymap.set('n', '<leader>ghil', ':Octo issue list<CR>', { desc = 'List issue
 vim.keymap.set('n', '<leader>ghic', ':Octo issue create<CR>', { desc = 'Create issue' })
 
 -- CSpell
-vim.keymap.set("n", "<leader>as", ":lua require('null-ls').builtins.code_actions.cspell()<CR>", { desc = "Apply cspell suggestion" })
-
+vim.keymap.set(
+  'n',
+  '<leader>as',
+  ":lua require('null-ls').builtins.code_actions.cspell()<CR>",
+  { desc = 'Apply cspell suggestion' }
+)
