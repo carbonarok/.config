@@ -495,6 +495,7 @@ require('lazy').setup({
   require('plugins.comment'),
   require('plugins.betterTerm'),
   require('plugins.galaxyline'),
+  require('plugins.cspell'),
   -- require('plugins.cursorline'),
   require('plugins.log-highlight'),
   require('plugins.project'),

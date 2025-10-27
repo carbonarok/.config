@@ -82,4 +82,6 @@ vim.keymap.set('n', '<leader>ba', ':%bd|e#<CR>', { desc = 'Close all buffers' })
 vim.keymap.set('n', '<leader>ghil', ':Octo issue list<CR>', { desc = 'List issues' })
 vim.keymap.set('n', '<leader>ghic', ':Octo issue create<CR>', { desc = 'Create issue' })
 
+-- CSpell
+vim.keymap.set("n", "<leader>as", ":lua require('null-ls').builtins.code_actions.cspell()<CR>", { desc = "Apply cspell suggestion" })
 
