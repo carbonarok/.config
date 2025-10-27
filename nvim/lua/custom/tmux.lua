@@ -1,4 +1,8 @@
 local function tmux_restart_by_title(title)
+  local in_session = os.getenv('TMUX')
+  if in_session == nil then
+    return vim.notify('Not inside a tmux session', vim.log.levels.WARN)
+  end
   -- current session name
   local session = vim.fn.systemlist({ 'tmux', 'display-message', '-p', '#S' })[1]
   if not session or session == '' then
