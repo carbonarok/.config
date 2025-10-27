@@ -14,6 +14,7 @@ windows:
     layout: tiled
     panes:
       - shell_command:
+          - printf "\033]2;django\007"
           - eval $(poetry env activate)
           - nautobot-server runserver 0.0.0.0:8000
 
