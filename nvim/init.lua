@@ -487,7 +487,7 @@ require('lazy').setup({
   },
 
   require('plugins.nvim-lspconfig'),
-  -- require('plugins.nvim-dap'),
+  require('plugins.nvim-dap'),
   require('plugins.nvim-treesitter'),
   require('plugins.neo-tree'),
   require('plugins.bufferline'),
@@ -503,6 +503,7 @@ require('lazy').setup({
   require('plugins.supermaven'),
   require('plugins.auto-session'),
   require('plugins.octo'),
+  require('plugins.local-config'),
   -- require('kickstart.plugins.debug'),
   require('kickstart.plugins.indent_line'),
   require('kickstart.plugins.lint'),

@@ -2,246 +2,361 @@
 return {
   {
     'mfussenegger/nvim-dap',
+    event = 'VeryLazy',
     dependencies = {
       'rcarriga/nvim-dap-ui',
       'theHamsta/nvim-dap-virtual-text',
-      'williamboman/mason.nvim',
-      'jay-babu/mason-nvim-dap.nvim',
+      'ravenxrz/DAPInstall.nvim', -- provides `dap-install`
+      'suketa/nvim-dap-ruby',
+      'nvim-telescope/telescope.nvim',
+      'nvim-telescope/telescope-dap.nvim',
+      'nvim-neotest/nvim-nio',
+      { 'scalameta/nvim-metals', optional = true },
+      -- ✅ Needed for Python DAP:
       'mfussenegger/nvim-dap-python',
     },
+    keys = {
+      {
+        '<leader>dc',
+        function()
+          require('dap').continue()
+        end,
+        desc = 'DAP Continue',
+      },
+      {
+        '<leader>do',
+        function()
+          require('dap').step_over()
+        end,
+        desc = 'DAP Step Over',
+      },
+      {
+        '<leader>di',
+        function()
+          require('dap').step_into()
+        end,
+        desc = 'DAP Step Into',
+      },
+      {
+        '<leader>dx',
+        function()
+          require('dap').step_out()
+        end,
+        desc = 'DAP Step Out',
+      },
+      {
+        '<leader>db',
+        function()
+          require('dap').toggle_breakpoint()
+        end,
+        desc = 'DAP Toggle Breakpoint',
+      },
+      {
+        '<leader>dB',
+        function()
+          require('dap').set_breakpoint(vim.fn.input('Breakpoint condition: '))
+        end,
+        desc = 'DAP Conditional Breakpoint',
+      },
+      {
+        '<leader>dl',
+        function()
+          require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: '))
+        end,
+        desc = 'DAP Logpoint',
+      },
+      {
+        '<leader>dr',
+        function()
+          require('dap').repl.open()
+        end,
+        desc = 'DAP REPL',
+      },
+      {
+        '<leader>drl',
+        function()
+          require('dap').run_last()
+        end,
+        desc = 'DAP Run Last',
+      },
+      {
+        '<leader>dev',
+        function()
+          require('dapui').eval()
+        end,
+        desc = 'DAP UI Eval',
+      },
+      {
+        '<leader>dclose',
+        function()
+          require('dapui').close()
+        end,
+        desc = 'DAP UI Close',
+      },
+      {
+        '<leader>de',
+        function()
+          require('dap').close()
+        end,
+        desc = 'DAP Close',
+      },
+      {
+        '<leader>dev',
+        function()
+          require('dapui').eval()
+        end,
+        mode = 'v',
+        desc = 'DAP UI Eval (Visual)',
+      },
+    },
     config = function()
-      -- --- Core setup (do NOT bind debugpy from Mason) -----------------------
-      require('mason').setup()
-      require('mason-nvim-dap').setup {
-        ensure_installed = {},            -- keep empty so Mason's debugpy won't be preferred
-        automatic_installation = false,   -- avoid re-binding adapters
-        handlers = {},
-      }
+      local dap, dapui = require('dap'), require('dapui')
 
-      local dap, dapui = require 'dap', require 'dapui'
-      dapui.setup()
+      -- UI + virtual text
+      dapui.setup({
+        expand_lines = true,
+        controls = { enabled = true, element = 'repl' },
+        icons = { collapsed = '', current_frame = '', expanded = '' },
+        mappings = {
+          -- Make Neo-tree style:
+          expand = { 'l', '<CR>', '<2-LeftMouse>' }, -- open/expand node
+          toggle = 'h', -- collapse/expand (acts as 'close' when open)
+          open = 'o', -- keep default
+          remove = 'd',
+          edit = 'e',
+          repl = 'r',
+        },
+        layouts = {
+          {
+            -- LEFT column: never touches the right where Neo-tree lives
+            elements = {
+              { id = 'scopes', size = 0.60 },
+              { id = 'stacks', size = 0.25 },
+              { id = 'breakpoints', size = 0.15 },
+              -- { id = 'watches', size = 0.15 },
+            },
+            size = 40, -- columns
+            position = 'left',
+          },
+          {
+            -- BOTTOM strip for REPL + Console
+            elements = {
+              { id = 'repl', size = 1 },
+              -- { id = 'console', size = 0.45 },
+            },
+            size = 12, -- rows
+            position = 'bottom',
+          },
+        },
+        floating = {
+          max_height = 0.85,
+          max_width = 0.85,
+          border = 'rounded',
+          mappings = { close = { 'q', '<Esc>' } },
+        },
+        render = { max_type_length = 60 },
+      })
       require('nvim-dap-virtual-text').setup()
 
-      -- Keep UI open on errors; only close on clean exit.
-      dap.listeners.after.event_initialized['dapui'] = function() dapui.open() end
-      dap.listeners.before.event_terminated['dapui'] = nil
-      dap.listeners.before.event_exited['dapui'] = function() dapui.close() end
-      pcall(dap.set_exception_breakpoints, { 'raised', 'uncaught' })
-
-      -- --- Utilities ---------------------------------------------------------
-      local function join(a, b) return (a:gsub('/+$','')) .. '/' .. (b:gsub('^/+','')) end
-      local function is_exec(p) return p and p ~= '' and vim.fn.executable(p) == 1 end
-      local function is_file(p) return p and p ~= '' and vim.fn.filereadable(p) == 1 end
-      local function exepath(bin) local p = vim.fn.exepath(bin); return p ~= '' and p or nil end
-      local function trim(s) return (s or ''):gsub('%s+$','') end
-      local function run(cmd) local ok,out=pcall(vim.fn.systemlist,cmd); if ok and #out>0 then return trim(out[1]) end end
-
-      local function find_project_root(start_dir)
-        local dir = vim.fn.fnamemodify(start_dir or vim.fn.getcwd(), ':p')
-        local markers = { 'manage.py', 'pyproject.toml', 'setup.cfg', 'setup.py', 'pyproject.toml', '.venv/bin/python' }
-        while dir and dir ~= '/' do
-          for _, m in ipairs(markers) do
-            if is_file(join(dir, m)) or (m:match('python') and is_exec(join(dir,'.venv/bin/python'))) then
-              return dir
-            end
-          end
-          dir = vim.fn.fnamemodify(dir, ':h')
-        end
-        return start_dir or vim.fn.getcwd()
+      -- dap-install setup + auto-configure installed debuggers
+      local dap_install = require('dap-install')
+      dap_install.setup({
+        installation_path = vim.fn.stdpath('data') .. '/dapinstall/',
+        verbosely_call_debuggers = true,
+      })
+      local dbg_list = require('dap-install.api.debuggers').get_installed_debuggers()
+      for _, debugger in ipairs(dbg_list) do
+        dap_install.config(debugger)
       end
 
-      local function detect_python(root)
-        root = root or vim.fn.getcwd()
+      -----------------------------------------------------------------------
+      -- Python: auto-detect venv python & configure nvim-dap-python/debugpy
+      -----------------------------------------------------------------------
+      local function path_join(...)
+        return table.concat({ ... }, '/')
+      end
 
-        -- Local .venv
-        local dotvenv = join(root, '.venv/bin/python')
-        if is_exec(dotvenv) then return dotvenv end
+      local function file_exists(p)
+        return p and vim.uv.fs_stat(p) ~= nil
+      end
 
-        -- Poetry (prefer project-local)
-        local poetry = exepath('poetry')
-        if poetry and is_file(join(root, 'pyproject.toml')) then
-          local venv = run({ poetry, '-C', root, 'env', 'info', '-p' }) or run({ poetry, 'env', 'info', '-p' })
-          if venv and venv ~= '' and is_exec(join(venv, 'bin/python')) then
-            return join(venv, 'bin/python')
+      local function exepath(bin)
+        local p = vim.fn.exepath(bin)
+        if p == nil or p == '' then
+          return nil
+        end
+        return p
+      end
+
+      local function workspace_root()
+        -- Prefer LSP root if available; else use current working directory.
+        local clients = vim.lsp.get_clients({ bufnr = 0 })
+        for _, c in ipairs(clients) do
+          if c.config and c.config.root_dir then
+            return c.config.root_dir
+          end
+        end
+        return vim.loop.cwd()
+      end
+
+      local function detect_python()
+        -- 0) Allow user override via global
+        if type(_G.venv_python_path) == 'function' then
+          local p = _G.venv_python_path()
+          if file_exists(p) then
+            return p
+          end
+        elseif type(_G.venv_python_path) == 'string' and file_exists(_G.venv_python_path) then
+          return _G.venv_python_path
+        end
+
+        -- 1) Activated VIRTUAL_ENV
+        local venv = vim.env.VIRTUAL_ENV
+        if venv and venv ~= '' then
+          local p = path_join(venv, 'bin', 'python')
+          if file_exists(p) then
+            return p
           end
         end
 
-        -- Pipenv
-        local pipenv = exepath('pipenv')
-        if pipenv and is_file(join(root, 'Pipfile')) then
-          local venv = run({ pipenv, '--venv' })
-          if venv and is_exec(join(venv, 'bin/python')) then return join(venv, 'bin/python') end
+        -- 2) .venv/ or venv/ in project
+        local root = workspace_root()
+        for _, name in ipairs({ '.venv', 'venv' }) do
+          local p = path_join(root, name, 'bin', 'python')
+          if file_exists(p) then
+            return p
+          end
         end
 
-        -- direnv / VIRTUAL_ENV
-        local venv = os.getenv('VIRTUAL_ENV')
-        if venv and is_exec(join(venv, 'bin/python')) then return join(venv, 'bin/python') end
-
-        -- pyenv
-        local pyenv = exepath('pyenv')
-        if pyenv then
-          local p = run({ pyenv, 'which', 'python' })
-          if is_exec(p) then return p end
+        -- 3) Poetry-managed env
+        if exepath('poetry') and file_exists(path_join(root, 'pyproject.toml')) then
+          local out = vim.fn.systemlist({ 'poetry', 'env', 'info', '-p' })
+          if out and out[1] and out[1] ~= '' then
+            local p = path_join(out[1], 'bin', 'python')
+            if file_exists(p) then
+              return p
+            end
+          end
         end
 
-        -- System fallback
+        -- 4) Pipenv (fallback to pipenv --py)
+        if exepath('pipenv') and file_exists(path_join(root, 'Pipfile')) then
+          local py = vim.fn.systemlist({ 'pipenv', '--py' })[1]
+          if py and file_exists(py) then
+            return py
+          end
+        end
+
+        -- 5) pyenv "which python"
+        if exepath('pyenv') then
+          local py = vim.fn.systemlist({ 'pyenv', 'which', 'python' })[1]
+          if py and file_exists(py) then
+            return py
+          end
+        end
+
+        -- 6) System python3 / python
         return exepath('python3') or exepath('python') or 'python3'
       end
 
-      local function smart_root_and_python(config)
-        -- Look near the program, cwd, and common monorepo subdirs
-        local cwd = vim.fn.getcwd()
-        local cfg_cwd = config and config.cwd or nil
-        local program_dir = (config and config.program) and vim.fn.fnamemodify(config.program, ':p:h') or nil
-        local candidates = {
-          cfg_cwd,
-          program_dir,
-          cwd,
-          join(cwd, 'backend'),
-          join(cwd, 'server'),
-          join(cwd, 'api'),
-          join(cwd, 'services/backend'),
-        }
-        for _, base in ipairs(candidates) do
-          if base then
-            local root = find_project_root(base)
-            if root then
-              local py = detect_python(root)
-              if is_exec(py) then return root, py end
+      local python_path = detect_python()
+
+      -- Configure adapter via nvim-dap-python
+      local dap_python = require('dap-python')
+      dap_python.setup(python_path) -- uses "<python> -m debugpy.adapter" internally
+
+      -- Optional: ensure debugpy present in that interpreter (silent, non-blocking)
+      local function ensure_debugpy(python)
+        if not python or python == '' then
+          return
+        end
+        -- quick check; if missing, install quietly
+        vim.fn.jobstart({ python, '-c', 'import debugpy' }, {
+          on_exit = function(_, code)
+            if code ~= 0 then
+              vim.notify('[dap] Installing debugpy into ' .. python .. ' venv…', vim.log.levels.INFO)
+              vim.fn.jobstart({ python, '-m', 'pip', 'install', '-q', 'debugpy' }, {
+                on_exit = function(_, c)
+                  if c == 0 then
+                    vim.notify('[dap] debugpy installed.', vim.log.levels.INFO)
+                  else
+                    vim.notify(
+                      '[dap] Failed to install debugpy; install it manually in your venv.',
+                      vim.log.levels.WARN
+                    )
+                  end
+                end,
+              })
             end
-          end
+          end,
+        })
+      end
+      ensure_debugpy(python_path)
+
+      -- Handy command to switch the Python on the fly:
+      vim.api.nvim_create_user_command('DapUsePython', function(opts)
+        local new_py = opts.args ~= '' and opts.args or vim.fn.input('Path to python: ', python_path)
+        if new_py ~= '' and file_exists(new_py) then
+          python_path = new_py
+          dap_python.setup(python_path)
+          vim.notify('[dap] Python set to: ' .. python_path, vim.log.levels.INFO)
+        else
+          vim.notify('[dap] Invalid python: ' .. new_py, vim.log.levels.ERROR)
         end
-        local root = find_project_root(cwd)
-        return root, detect_python(root)
+      end, { nargs = '?', complete = 'file' })
+
+      -- Language adapters
+      require('dap-ruby').setup()
+
+      -- Open DAP UI on start
+      dap.listeners.after.event_initialized['dapui_config'] = function()
+        dapui.open()
       end
 
-      -- --- One dynamic adapter for everything --------------------------------
-      local function dynamic_python_adapter(cb, config)
-        local root, py = smart_root_and_python(config)
-        -- Ensure PYTHONPATH includes root for `-m fluxus`-style invocations
-        config.cwd = config.cwd or root
-        config.env = config.env or {}
-        if not config.env.PYTHONPATH then
-          config.env.PYTHONPATH = root
-        elseif not tostring(config.env.PYTHONPATH):find(root, 1, true) then
-          config.env.PYTHONPATH = config.env.PYTHONPATH .. ':' .. root
-        end
-
-        cb({ type = 'executable', command = py, args = { '-m', 'debugpy.adapter' } })
-      end
-
-      -- Force BOTH ids to our dynamic adapter (covers "python" and "debugpy")
-      dap.adapters.python  = dynamic_python_adapter
-      dap.adapters.debugpy = dynamic_python_adapter
-
-      -- nvim-dap-python helpers (pytest etc.) use the same project venv
-      local root = find_project_root()
-      local py_helpers = detect_python(root)
-      require('dap-python').setup(py_helpers)
-
-      -- Warn if debugpy missing in project interpreter
-      do
-        local out = vim.fn.system({ py_helpers, '-c', 'import debugpy,sys;sys.stdout.write(debugpy.__version__)' })
-        if not tostring(out or ''):match('%d+%.%d+') then
-          vim.schedule(function()
-            vim.notify(
-              ('debugpy not found in %s.\nRun:\n  %s -m pip install -U debugpy'):format(py_helpers, py_helpers),
-              vim.log.levels.WARN,
-              { title = 'nvim-dap-python' }
-            )
-          end)
-        end
-      end
-
-      -- --- Baseline Python configs -------------------------------------------
-      local function django_config()
-        local cwd = vim.fn.getcwd()
-        local manage = is_file(join(cwd, 'manage.py')) and join(cwd, 'manage.py')
-          or (is_file(join(cwd, 'backend/manage.py')) and join(cwd, 'backend/manage.py'))
-          or nil
-        if not manage then return nil end
-        local proj_dir = vim.fn.fnamemodify(manage, ':p:h')
+      -- Python launch configs (edit to taste)
+      dap.configurations.python = dap.configurations.python or {}
+      local function py_cfg_base()
         return {
           type = 'python',
           request = 'launch',
-          name = 'Django runserver',
-          program = manage,
-          args = { 'runserver', '0.0.0.0:8000' },
-          django = true,
-          cwd = proj_dir,
-          console = 'integratedTerminal',
           justMyCode = false,
-          env = { PYTHONPATH = proj_dir },
+          console = 'integratedTerminal',
+          pythonPath = function()
+            return python_path
+          end,
         }
       end
 
-      dap.configurations.python = {
-        {
-          type = 'python',
-          request = 'launch',
-          name = 'Launch current file',
-          program = '${file}',
-          console = 'integratedTerminal',
-          justMyCode = false,
-          cwd = '${workspaceFolder}',
-        },
-        {
-          type = 'python',
-          request = 'attach',
-          name = 'Attach to process',
-          processId = require('dap.utils').pick_process,
-          justMyCode = false,
-        },
-        django_config(),
-      }
+      -- Example: Django runserver (expects manage.py in project)
+      -- table.insert(
+      --   dap.configurations.python,
+      --   vim.tbl_deep_extend('force', py_cfg_base(), {
+      --     name = 'Django: runserver',
+      --     program = '${workspaceFolder}/manage.py',
+      --     args = { 'runserver', '0.0.0.0:8000' },
+      --     cwd = '${workspaceFolder}',
+      --   })
+      -- )
+      --
+      -- -- Example: Celery worker via module
+      -- table.insert(
+      --   dap.configurations.python,
+      --   vim.tbl_deep_extend('force', py_cfg_base(), {
+      --     name = 'Celery worker',
+      --     module = 'celery',
+      --     args = { '-A', 'core', 'worker', '-l', 'INFO', '--pool', 'solo', '--concurrency', '1' },
+      --     cwd = '${workspaceFolder}',
+      --     env = { PYTHONUNBUFFERED = '1' },
+      --   })
+      -- )
 
-      -- --- Load VSCode launch.json and normalize entries ---------------------
-      local function normalize_python_configs()
-        local configs = dap.configurations.python or {}
-        for _, cfg in ipairs(configs) do
-          -- Force adapter id to one we control
-          if cfg.type == 'debugpy' then cfg.type = 'python' end
-
-          -- Ensure CWD and PYTHONPATH are sane for module/package runs
-          local root2 = find_project_root(cfg.cwd or vim.fn.getcwd())
-          cfg.cwd = cfg.cwd or root2
-          cfg.env = cfg.env or {}
-          if not cfg.env.PYTHONPATH then
-            cfg.env.PYTHONPATH = root2
-          elseif not tostring(cfg.env.PYTHONPATH):find(root2, 1, true) then
-            cfg.env.PYTHONPATH = cfg.env.PYTHONPATH .. ':' .. root2
-          end
-
-          -- Prefer integrated terminal for visibility
-          cfg.console = cfg.console or 'integratedTerminal'
-        end
-      end
-
-      do
-        local vscode = require('dap.ext.vscode')
-        local launchjs = vim.fn.getcwd() .. '/.vscode/launch.json'
-        if vim.fn.filereadable(launchjs) == 1 then
-          -- Map both "python" and "debugpy" types to Python configs we control.
-          vscode.load_launchjs(launchjs, { python = { 'python' }, debugpy = { 'python' } })
-        end
-        normalize_python_configs()
-      end
-
-      -- --- Keymaps (unchanged) -----------------------------------------------
-      local map = vim.keymap.set
-      map('n', '<F5>', dap.continue, { desc = 'DAP Continue/Start' })
-      map('n', '<F9>', dap.toggle_breakpoint, { desc = 'DAP Toggle Breakpoint' })
-      map('n', '<F10>', dap.step_over, { desc = 'DAP Step Over' })
-      map('n', '<F11>', dap.step_into, { desc = 'DAP Step Into' })
-      map('n', '<F12>', dap.step_out, { desc = 'DAP Step Out' })
-      map('n', '<leader>db', function() dap.set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, { desc = 'DAP Conditional BP' })
-      map('n', '<leader>dr', dap.repl.open, { desc = 'DAP REPL' })
-      map({ 'n', 'v' }, '<leader>de', function() require('dap.ui.widgets').hover() end, { desc = 'DAP Eval (hover)' })
-
-      local dappython = require('dap-python')
-      map('n', '<leader>tm', dappython.test_method, { desc = 'Debug Pytest Method' })
-      map('n', '<leader>tc', dappython.test_class,  { desc = 'Debug Pytest Class' })
-      map('v', '<leader>ts', dappython.debug_selection, { desc = 'Debug Selection' })
+      -- Telescope extensions (ignore if not installed)
+      pcall(function()
+        require('telescope').load_extension('dap')
+      end)
+      pcall(function()
+        require('telescope').load_extension('metals')
+      end)
     end,
   },
 }
