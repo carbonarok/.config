@@ -77,3 +77,9 @@ vim.keymap.set('n', '<leader>bc', ':bdelete<CR>', { desc = 'Close current buffer
 
 -- Close ALL (custom)
 vim.keymap.set('n', '<leader>ba', ':%bd|e#<CR>', { desc = 'Close all buffers' })
+
+-- Octo Githut Shortcuts
+vim.keymap.set('n', '<leader>ghil', ':Octo issue list<CR>', { desc = 'List issues' })
+vim.keymap.set('n', '<leader>ghic', ':Octo issue create<CR>', { desc = 'Create issue' })
+
+

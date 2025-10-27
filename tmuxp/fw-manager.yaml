@@ -1,5 +1,5 @@
-session_name: nautobot
-start_directory: /Users/opti-mac/Projects/nautobot/nautobot
+session_name: firewall-manager
+start_directory: /Users/opti-mac/Projects/opticoreit/firewall-manager
 
 windows:
   - window_name: editor
@@ -15,14 +15,7 @@ windows:
     panes:
       - shell_command:
           - eval $(poetry env activate)
-          - nautobot-server runserver 0.0.0.0:8000
-
-      - shell_command:
-          - eval $(poetry env activate)
-
-      - shell_command:
-          - eval $(poetry env activate)
-          - nautobot-server celery -A core worker --loglevel=info --pool=solo --concurrency=1
+          - cd ../example-fw-ac/
 
   - window_name: lazygit
     start_directory: .

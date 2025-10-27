@@ -500,6 +500,7 @@ require('lazy').setup({
   require('plugins.project'),
   require('plugins.supermaven'),
   require('plugins.auto-session'),
+  require('plugins.octo'),
   -- require('kickstart.plugins.debug'),
   require('kickstart.plugins.indent_line'),
   require('kickstart.plugins.lint'),

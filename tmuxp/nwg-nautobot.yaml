@@ -22,5 +22,11 @@ windows:
 
       - shell_command:
           - source venv/bin/activate
-          - nautobot-server celery worker core --loglevel=info --pool=solo --concurrency=1
+          - nautobot-server celery -A core worker --loglevel=info --pool=solo --concurrency=1
 
+  - window_name: lazygit
+    start_directory: .
+    panes:
+      - shell_command:
+          - lazygit
+        focus: true
