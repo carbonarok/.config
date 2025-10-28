@@ -12,7 +12,6 @@ return {
       'nvim-telescope/telescope-dap.nvim',
       'nvim-neotest/nvim-nio',
       { 'scalameta/nvim-metals', optional = true },
-      -- ✅ Needed for Python DAP:
       'mfussenegger/nvim-dap-python',
     },
     keys = {

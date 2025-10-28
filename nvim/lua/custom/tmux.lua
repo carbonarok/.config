@@ -36,6 +36,24 @@ local function tmux_get_target_pane(title)
   return target
 end
 
+local function tmux_stop_by_title(title)
+  local target = tmux_get_target_pane(title)
+  vim.fn.jobstart({ 'tmux', 'send-keys', '-t', target, 'C-c', 'Enter' }, { detach = true })
+  vim.notify(string.format('Stopped %s', title), vim.log.levels.INFO)
+end
+
+vim.keymap.set('n', '<leader>tsw', function()
+  tmux_stop_by_title('worker')
+end, { desc = 'Stop worker in current tmux session (all windows)' })
+
+vim.keymap.set('n', '<leader>tsb', function()
+  tmux_stop_by_title('backend')
+end, { desc = 'Stop backend in current tmux session (all windows)' })
+
+vim.keymap.set('n', '<leader>tsf', function()
+  tmux_stop_by_title('frontend')
+end, { desc = 'Stop frontend in current tmux session (all windows)' })
+
 local function tmux_restart_by_title(title)
   local target = tmux_get_target_pane(title)
   vim.fn.jobstart({ 'tmux', 'send-keys', '-t', target, 'C-c', 'Up', 'Enter' }, { detach = true })
