@@ -18,6 +18,7 @@ windows:
           - fluxus-server runserver 0.0.0.0:8000
 
       - shell_command:
+          - printf "\033]2;frontend\007"
           - cd frontend
           - npm install
           - npm start

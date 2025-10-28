@@ -504,6 +504,7 @@ require('lazy').setup({
   require('plugins.auto-session'),
   require('plugins.octo'),
   require('plugins.local-config'),
+  require('plugins.vim-tmux-navigator'),
   -- require('kickstart.plugins.debug'),
   require('kickstart.plugins.indent_line'),
   require('kickstart.plugins.lint'),

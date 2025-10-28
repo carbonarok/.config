@@ -1,7 +1,8 @@
 local function tmux_get_target_pane(title)
   local in_session = os.getenv('TMUX')
   if in_session == nil then
-    return vim.notify('Not inside a tmux session', vim.log.levels.WARN)
+    vim.notify('Not inside a tmux session', vim.log.levels.WARN)
+    return nil
   end
   -- current session name
   local session = vim.fn.systemlist({ 'tmux', 'display-message', '-p', '#S' })[1]
@@ -38,6 +39,9 @@ end
 
 local function tmux_stop_by_title(title)
   local target = tmux_get_target_pane(title)
+  if not target then
+    return
+  end
   vim.fn.jobstart({ 'tmux', 'send-keys', '-t', target, 'C-c', 'Enter' }, { detach = true })
   vim.notify(string.format('Stopped %s', title), vim.log.levels.INFO)
 end
@@ -56,6 +60,9 @@ end, { desc = 'Stop frontend in current tmux session (all windows)' })
 
 local function tmux_restart_by_title(title)
   local target = tmux_get_target_pane(title)
+  if not target then
+    return
+  end
   vim.fn.jobstart({ 'tmux', 'send-keys', '-t', target, 'C-c', 'Up', 'Enter' }, { detach = true })
   vim.notify(string.format('Restarted %s', title), vim.log.levels.INFO)
 end
