@@ -28,17 +28,17 @@ local function reload_config()
   vim.cmd('source ~/.config/nvim/init.lua')
 end
 
-vim.keymap.set('n', '<leader>.p', function()
+vim.keymap.set('n', '<leader>cp', function()
   vim.ui.input({ prompt = 'Enter commit message: ' }, function(message)
     push_to_git('~/.config', message)
   end)
 end, { desc = 'Push ~/.config to git' })
 
-vim.keymap.set('n', '<leader>.s', function()
+vim.keymap.set('n', '<leader>cs', function()
   pull_from_git('~/.config')
   reload_config()
 end, { desc = 'Pull ~/.config from git' })
 
-vim.keymap.set('n', '<leader>.r', function()
+vim.keymap.set('n', '<leader>cr', function()
   reload_config()
 end, { desc = 'Reload ~/.config' })
