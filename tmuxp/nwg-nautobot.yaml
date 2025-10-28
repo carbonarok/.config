@@ -14,7 +14,7 @@ windows:
     layout: tiled
     panes:
       - shell_command:
-          - printf "\033]2;django\007"
+          - printf "\033]2;backend\007"
           - source venv/bin/activate
           - nautobot-server runserver 0.0.0.0:8000
 
@@ -22,7 +22,7 @@ windows:
           - source venv/bin/activate
 
       - shell_command:
-          - printf "\033]2;celery\007"
+          - printf "\033]2;worker\007"
           - source venv/bin/activate
           - nautobot-server celery worker --loglevel=info --pool=solo --concurrency=1
 

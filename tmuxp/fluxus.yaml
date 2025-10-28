@@ -14,7 +14,7 @@ windows:
     layout: tiled
     panes:
       - shell_command:
-          - printf "\033]2;django\007"
+          - printf "\033]2;backend\007"
           - fluxus-server runserver 0.0.0.0:8000
 
       - shell_command:
@@ -23,7 +23,7 @@ windows:
           - npm start
 
       - shell_command:
-          - printf "\033]2;celery\007"
+          - printf "\033]2;worker\007"
           - cd backend/fluxus/
           - fluxus-server celery -A core worker --loglevel=info --pool=solo --concurrency=1
 

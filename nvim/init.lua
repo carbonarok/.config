@@ -532,4 +532,5 @@ require('lazy').setup({
 
 require('remap')
 require('python-debug')
+require('custom.sync-system')
 require('custom.tmux')

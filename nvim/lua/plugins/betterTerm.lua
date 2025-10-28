@@ -17,6 +17,14 @@ return {
       end,
       desc = 'Open BetterTerm 1',
     },
+    {
+      mode = { 'n' },
+      '<leader>tt',
+      function()
+        require('betterTerm').open(1)
+      end,
+      desc = 'Open BetterTerm 1',
+    },
   },
   opts = {
     position = 'bot',

@@ -1,4 +1,4 @@
-local function tmux_restart_by_title(title)
+local function tmux_get_target_pane(title)
   local in_session = os.getenv('TMUX')
   if in_session == nil then
     return vim.notify('Not inside a tmux session', vim.log.levels.WARN)
@@ -33,17 +33,26 @@ local function tmux_restart_by_title(title)
     return vim.notify(string.format("No tmux pane titled '%s' in session '%s'", title, session), vim.log.levels.WARN)
   end
 
+  return target
+end
+
+local function tmux_restart_by_title(title)
+  local target = tmux_get_target_pane(title)
   vim.fn.jobstart({ 'tmux', 'send-keys', '-t', target, 'C-c', 'Up', 'Enter' }, { detach = true })
   vim.notify(string.format('Restarted %s', title), vim.log.levels.INFO)
 end
 
-vim.keymap.set('n', '<leader>trd', function()
-  tmux_restart_by_title('celery')
-end, { desc = 'Restart celery in current tmux session (all windows)' })
+vim.keymap.set('n', '<leader>trw', function()
+  tmux_restart_by_title('worker')
+end, { desc = 'Restart worker in current tmux session (all windows)' })
 
-vim.keymap.set('n', '<leader>trc', function()
-  tmux_restart_by_title('celery')
-end, { desc = 'Restart celery in current tmux session (all windows)' })
+vim.keymap.set('n', '<leader>trb', function()
+  tmux_restart_by_title('backend')
+end, { desc = 'Restart backend in current tmux session (all windows)' })
+
+vim.keymap.set('n', '<leader>trf', function()
+  tmux_restart_by_title('frontend')
+end, { desc = 'Restart frontend in current tmux session (all windows)' })
 
 vim.keymap.set('n', '<leader>tri', function()
   vim.ui.input({ prompt = 'Enter pane title: ' }, function(input)
