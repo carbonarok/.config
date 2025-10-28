@@ -6,10 +6,14 @@ local function push_to_git(path, message)
     return
   end
 
+  local current_path = vim.fn.getcwd()
+
   vim.cmd('cd ' .. full_path)
   vim.cmd('!git add .')
   vim.cmd("!git commit -m '%s'", message)
   vim.cmd('!git push')
+
+  vim.cmd('cd ' .. current_path)
 end
 
 local function pull_from_git(path)
