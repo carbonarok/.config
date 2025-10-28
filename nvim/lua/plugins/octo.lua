@@ -7,7 +7,7 @@ return {
     -- OR 'folke/snacks.nvim',
     'nvim-tree/nvim-web-devicons',
   },
-  config = function ()
-    require"octo".setup()
-  end
-} 
+  config = function()
+    require('octo').setup()
+  end,
+}

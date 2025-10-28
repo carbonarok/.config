@@ -179,22 +179,45 @@ return {
         settings = {
           typescript = {
             inlayHints = { includeInlayParameterNameHints = 'all' },
+            format = {
+              indentSize = 2,
+              tabSize = 2,
+              convertTabsToSpaces = true,
+            },
           },
           javascript = {
             inlayHints = { includeInlayParameterNameHints = 'all' },
+            format = {
+              indentSize = 2,
+              tabSize = 2,
+              convertTabsToSpaces = true,
+            },
+          },
+          javascriptreact = {
+            format = {
+              indentSize = 2,
+              tabSize = 2,
+              convertTabsToSpaces = true,
+            },
+          },
+          typescriptreact = {
+            format = {
+              indentSize = 2,
+              tabSize = 2,
+              convertTabsToSpaces = true,
+            },
           },
         },
-        -- filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact", "vue" },
       },
 
-      eslint = {
-        settings = {
-          -- Run on save if you want auto-fix:
-          -- codeActionOnSave = { enable = true, mode = "all" },
-          -- format = { enable = true},
-          -- experimental: { useFlatConfig = true }, -- if you're on flat config
-        },
-      },
+      -- eslint = {
+      --   settings = {
+      --     -- Run on save if you want auto-fix:
+      --     -- codeActionOnSave = { enable = true, mode = "all" },
+      --     -- format = { enable = true},
+      --     -- experimental: { useFlatConfig = true }, -- if you're on flat config
+      --   },
+      -- },
       html = {},
       cssls = {},
       emmet_ls = {}, -- Emmet in HTML/CSS/JSX/TSX

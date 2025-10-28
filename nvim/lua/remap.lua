@@ -73,7 +73,11 @@ vim.keymap.set('n', '<leader>bh', ':BufferLineCloseLeft<CR>', { desc = 'Close le
 vim.keymap.set('n', '<leader>bl', ':BufferLineCloseRight<CR>', { desc = 'Close right' })
 
 -- Close current (safe)
-vim.keymap.set('n', '<leader>bc', ':bdelete<CR>', { desc = 'Close current buffer' })
+vim.keymap.set('n', '<leader>bc', function()
+  local cur_buf = vim.api.nvim_get_current_buf()
+  vim.cmd('bnext') -- move to next buffer
+  vim.cmd('bdelete ' .. cur_buf)
+end, { desc = 'Close current buffer safely' })
 
 -- Close ALL (custom)
 vim.keymap.set('n', '<leader>ba', ':%bd|e#<CR>', { desc = 'Close all buffers' })

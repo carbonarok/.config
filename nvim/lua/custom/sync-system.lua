@@ -29,7 +29,15 @@ local function pull_from_git(path)
 end
 
 local function reload_config()
-  vim.cmd('source ~/.config/nvim/init.lua')
+  for name, _ in pairs(package.loaded) do
+    if name:match('^custom') or name:match('^user') or name:match('^plugins') then
+      package.loaded[name] = nil
+    end
+  end
+
+  pcall(require, 'init') -- or whatever your top-level module is
+
+  vim.notify('Config reloaded (modules only). Use :Lazy reload for plugins.', vim.log.levels.INFO)
 end
 
 vim.keymap.set('n', '<leader>cp', function()

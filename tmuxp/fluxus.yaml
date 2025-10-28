@@ -6,6 +6,7 @@ windows:
     start_directory: .
     panes:
       - shell_command:
+          - printf "\033]2;nvim\007"
           - nvim .
         focus: true
 
@@ -32,5 +33,6 @@ windows:
     start_directory: .
     panes:
       - shell_command:
+          - printf "\033]2;lazygit\007"
           - lazygit
         focus: true
