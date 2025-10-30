@@ -93,3 +93,5 @@ vim.keymap.set(
   ":lua require('null-ls').builtins.code_actions.cspell()<CR>",
   { desc = 'Apply cspell suggestion' }
 )
+
+vim.keymap.set('n', '<leader>mt', '<cmd>SupermavenToggle<CR>', { desc = 'SuperMaven Toggle' })

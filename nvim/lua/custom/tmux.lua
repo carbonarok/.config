@@ -148,3 +148,21 @@ vim.keymap.set('n', '<leader>tjp', function()
     end)
   end)
 end, { desc = 'Prompt via UI input' })
+
+vim.keymap.set('n', '<leader>tjb', function()
+  local window_name = 'editor'
+  local pane_title = 'backend'
+  tmux_join_pane_to_window(window_name, pane_title)
+end, { desc = 'Join backend to editor' })
+
+vim.keymap.set('n', '<leader>tjf', function()
+  local window_name = 'editor'
+  local pane_title = 'frontend'
+  tmux_join_pane_to_window(window_name, pane_title)
+end, { desc = 'Join frontend to editor' })
+
+vim.keymap.set('n', '<leader>tjw', function()
+  local window_name = 'editor'
+  local pane_title = 'worker'
+  tmux_join_pane_to_window(window_name, pane_title)
+end, { desc = 'Join worker to editor' })

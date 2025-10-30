@@ -6,9 +6,9 @@ return {
     -- Global statusline (Neovim 0.7+)
     vim.o.laststatus = 3
 
-    local gl = require 'galaxyline'
+    local gl = require('galaxyline')
     local gls = gl.section
-    local condition = require 'galaxyline.condition'
+    local condition = require('galaxyline.condition')
 
     -- ── Colors (tweak to taste)
     local palette = {
@@ -145,7 +145,7 @@ return {
         LspClient = {
           provider = function()
             local buf = vim.api.nvim_get_current_buf()
-            local clients = vim.lsp.get_clients { bufnr = buf }
+            local clients = vim.lsp.get_clients({ bufnr = buf })
             if not clients or #clients == 0 then
               return ''
             end
@@ -158,7 +158,7 @@ return {
           highlight = { fg = palette.cyan, bg = palette.bg },
           condition = function()
             local buf = vim.api.nvim_get_current_buf()
-            return #vim.lsp.get_clients { bufnr = buf } > 0
+            return #vim.lsp.get_clients({ bufnr = buf }) > 0
           end,
           separator = ' ',
           separator_highlight = hl(),
@@ -219,13 +219,21 @@ return {
         },
       },
       {
-        FileEncode = {
-          provider = 'FileEncode',
-          icon = '󰗊 ',
-          highlight = hl(nil, palette.fg),
-          condition = condition.hide_in_width,
-          separator = ' ',
+        SuperMaven = {
+          provider = function()
+            local ok, api = pcall(require, "supermaven-nvim.api")
+            if not ok then return "" end
+            local on = api.is_running and api.is_running()
+            return on and "󰒋 SuperMaven" or ""
+          end,
+          highlight = function()
+            local ok, api = pcall(require, "supermaven-nvim.api")
+            local on = ok and api.is_running and api.is_running()
+            return { fg = on and palette.green or palette.dim, bg = palette.bg, gui = on and "bold" or nil }
+          end,
+          separator = " ",
           separator_highlight = hl(),
+          condition = condition.hide_in_width,
         },
       },
 

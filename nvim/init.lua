@@ -41,7 +41,12 @@ vim.o.splitright = true
 vim.o.splitbelow = true
 
 vim.o.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.opt.listchars = {
+  -- space = '·',
+  tab = '» ',
+  trail = '·',
+  nbsp = '␣',
+}
 
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
@@ -265,6 +270,17 @@ require('lazy').setup({
         --  All the info you're looking for is in `:help telescope.setup()`
         --
         defaults = {
+          entry_maker = function(entry)
+            local filename = vim.fn.fnamemodify(entry.filename or entry.value.filename, ':.')
+            local lnum = entry.lnum or entry.value.lnum
+            return {
+              value = entry.value,
+              ordinal = filename .. ':' .. lnum,
+              display = filename .. ':' .. lnum,
+              filename = filename,
+              lnum = lnum,
+            }
+          end,
           mappings = {
             -- n = { ['<Space>'] = telescope.select_default },
             n = {
@@ -273,7 +289,28 @@ require('lazy').setup({
             },
           },
         },
-        -- pickers = {}
+        pickers = {
+          lsp_references = {
+            initial_mode = 'normal',
+            show_line = false,
+            trim_text = true,
+          },
+          lsp_definitions = {
+            initial_mode = 'normal',
+            show_line = false,
+            trim_text = true,
+          },
+          lsp_declarations = {
+            initial_mode = 'normal',
+            show_line = false,
+            trim_text = true,
+          },
+          lsp_implementations = {
+            initial_mode = 'normal',
+            show_line = false,
+            trim_text = true,
+          },
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -488,7 +525,6 @@ require('lazy').setup({
 
   require('plugins.nvim-lspconfig'),
   require('plugins.nvim-dap'),
-  require('plugins.nvim-treesitter'),
   require('plugins.neo-tree'),
   require('plugins.bufferline'),
   require('plugins.venv-selector'),
@@ -496,7 +532,6 @@ require('lazy').setup({
   require('plugins.vim-visual-multi'),
   require('plugins.comment'),
   require('plugins.betterTerm'),
-  require('plugins.galaxyline'),
   require('plugins.cspell'),
   require('plugins.log-highlight'),
   require('plugins.project'),
@@ -505,12 +540,15 @@ require('lazy').setup({
   require('plugins.octo'),
   require('plugins.local-config'),
   require('plugins.vim-tmux-navigator'),
+  require('plugins.indent-blankline'),
+  require('plugins.nvim-treesitter'),
+  -- require('plugins.nvim-treesitter-rainbow'),
   -- require('kickstart.plugins.debug'),
-  require('kickstart.plugins.indent_line'),
   require('kickstart.plugins.lint'),
   require('kickstart.plugins.autopairs'),
   require('kickstart.plugins.gitsigns'),
   require('plugins.auto-format'),
+  require('plugins.galaxyline'),
 }, {
   ui = {
     icons = vim.g.have_nerd_font and {} or {

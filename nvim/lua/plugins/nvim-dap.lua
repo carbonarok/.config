@@ -23,6 +23,13 @@ return {
         desc = 'DAP Continue',
       },
       {
+        '<leader>drr',
+        function()
+          require('dap').restart()
+        end,
+        desc = 'DAP Restart',
+      },
+      {
         '<leader>do',
         function()
           require('dap').step_over()
@@ -320,10 +327,101 @@ return {
           request = 'launch',
           justMyCode = false,
           console = 'integratedTerminal',
+          env = {
+            PYTHONFAULTHANDLER = '1',
+          },
           pythonPath = function()
             return python_path
           end,
         }
+      end
+
+      local ns = vim.api.nvim_create_namespace('dap-traceback')
+
+      vim.api.nvim_set_hl(0, 'DapTracebackBG', { bg = '#3f0000', fg = '#ffcccc' })
+
+      local function clear_tb()
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+          if vim.api.nvim_buf_is_loaded(buf) then
+            vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
+          end
+        end
+      end
+
+      dap.listeners.before.event_continued['dap-tb-clear'] = clear_tb
+      dap.listeners.before.event_terminated['dap-tb-clear'] = clear_tb
+      dap.listeners.before.event_exited['dap-tb-clear'] = clear_tb
+
+      dap.listeners.after.event_stopped['dap-tb-show'] = function(session, body)
+        if not body or body.reason ~= 'exception' then
+          return
+        end
+
+        -- Where did we stop?
+        session:request('stackTrace', { threadId = body.threadId, startFrame = 0, levels = 1 }, function(err, resp)
+          if err or not resp or not resp.stackFrames or not resp.stackFrames[1] then
+            return
+          end
+          local frame = resp.stackFrames[1]
+          local bufnr = vim.fn.bufnr(frame.source and frame.source.path or '')
+          if bufnr == -1 then
+            bufnr = vim.api.nvim_get_current_buf()
+          end
+          local line0 = (frame.line or 1) - 1 -- 0-indexed
+
+          -- Ask debugpy for full exception details (including traceback text)
+          session:request('exceptionInfo', { threadId = body.threadId }, function(e2, info)
+            if e2 or not info or not info.details then
+              return
+            end
+
+            local parts = {}
+
+            if info.details.message and info.details.message ~= '' then
+              table.insert(parts, info.details.message)
+            end
+            if info.details.stackTrace and info.details.stackTrace ~= '' then
+              vim.list_extend(parts, vim.split(info.details.stackTrace, '\n', { plain = true, trimempty = true }))
+            end
+            if #parts == 0 then
+              parts = { 'Exception occurred (no details provided by adapter)' }
+            end
+
+            -- Build virtual lines with full-width red background
+            vim.schedule(function()
+              if not vim.api.nvim_buf_is_loaded(bufnr) then
+                return
+              end
+              local winid = vim.fn.bufwinid(bufnr)
+              if winid == -1 then
+                winid = vim.api.nvim_get_current_win()
+              end
+              local width = vim.api.nvim_win_get_width(winid)
+
+              local function pad(line)
+                -- Pad to window width so bg covers the whole row
+                local display = vim.fn.strdisplaywidth(line)
+                local nspace = math.max(0, width - display)
+                return line .. string.rep(' ', nspace)
+              end
+
+              -- First an empty spacer line to "create space"
+              local virt_lines = { { { pad(''), 'DapTracebackBG' } } }
+              -- Then the traceback lines
+              for _, txt in ipairs(parts) do
+                table.insert(virt_lines, { { pad(txt), 'DapTracebackBG' } })
+              end
+
+              -- Place the block directly under the faulting line
+              -- virt_lines_above=false => below the extmark
+              vim.api.nvim_buf_set_extmark(bufnr, ns, line0, 0, {
+                virt_lines = virt_lines,
+                virt_lines_above = false,
+                hl_mode = 'combine',
+              })
+            end)
+          end)
+        end)
       end
 
       -- Example: Django runserver (expects manage.py in project)

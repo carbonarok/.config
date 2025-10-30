@@ -1,6 +1,8 @@
 session_name: fluxus
-start_directory: /Users/opti-mac/Projects/opticoreit/fluxus
-
+start_directory: /Users/opti-mac/Projects/opticoreit/fluxus/fluxus
+env:
+  DJANGO_SETTINGS_MODULE: fluxus.core.settings
+  PYTHONUNBUFFERED: 1
 windows:
   - window_name: editor
     start_directory: .
@@ -16,6 +18,8 @@ windows:
     panes:
       - shell_command:
           - printf "\033]2;backend\007"
+          - cd backend/
+          - eval $(poetry env activate)
           - fluxus-server runserver 0.0.0.0:8000
 
       - shell_command:
@@ -27,6 +31,7 @@ windows:
       - shell_command:
           - printf "\033]2;worker\007"
           - cd backend/fluxus/
+          - eval $(poetry env activate)
           - fluxus-server celery -A core worker --loglevel=info --pool=solo --concurrency=1
 
   - window_name: lazygit

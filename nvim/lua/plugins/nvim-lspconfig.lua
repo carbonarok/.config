@@ -69,7 +69,10 @@ return {
         map('grc', function()
           local err = vim.lsp.diagnostic.get_line_diagnostics()
           if err ~= nil and #err > 0 then
-            local err_msg = err[1].message
+            err_msg = ''
+            for _, e in ipairs(err) do
+              err_msg = err_msg .. e.message .. '\n'
+            end
             vim.fn.setreg('+', err_msg)
           end
         end, '[G]oto [C]opy Error')
