@@ -48,6 +48,8 @@ vim.opt.listchars = {
   nbsp = '␣',
 }
 
+vim.env.PATH = '/opt/homebrew/bin:/usr/local/bin:' .. vim.env.PATH
+
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
 
@@ -65,6 +67,7 @@ vim.o.confirm = true
 vim.o.termguicolors = true
 vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,localoptions'
 
+vim.opt.iskeyword:append({ '-', '_' })
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -283,8 +286,14 @@ require('lazy').setup({
           end,
           mappings = {
             -- n = { ['<Space>'] = telescope.select_default },
+            i = {
+              ['<C-l>'] = telescope.select_vertical,
+              ['<CR>'] = telescope.select_vertical,
+            },
             n = {
               ['<C-q>'] = false,
+              ['<CR>'] = telescope.select_vertical,
+              ['l'] = telescope.select_vertical,
               ['<leader>s'] = telescope.send_to_qflist + telescope.open_qflist,
             },
           },
@@ -542,6 +551,7 @@ require('lazy').setup({
   require('plugins.vim-tmux-navigator'),
   require('plugins.indent-blankline'),
   require('plugins.nvim-treesitter'),
+  require('plugins.vimtex'),
   -- require('plugins.nvim-treesitter-rainbow'),
   -- require('kickstart.plugins.debug'),
   require('kickstart.plugins.lint'),

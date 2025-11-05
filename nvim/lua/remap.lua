@@ -95,3 +95,17 @@ vim.keymap.set(
 )
 
 vim.keymap.set('n', '<leader>mt', '<cmd>SupermavenToggle<CR>', { desc = 'SuperMaven Toggle' })
+
+-- Normal mode: move current line
+vim.keymap.set('n', '<A-j>', ':m .+1<CR>==', { silent = true })
+vim.keymap.set('n', '<A-k>', ':m .-2<CR>==', { silent = true })
+
+-- Visual mode: move selected lines
+vim.keymap.set('v', '<A-j>', ":m '>+1<CR>gv=gv", { silent = true })
+vim.keymap.set('v', '<A-k>', ":m '<-2<CR>gv=gv", { silent = true })
+
+-- Run previous command in better-term terminal
+vim.keymap.set('n', '<leader>rp', function()
+  local bt = require('betterTerm')
+  bt.send('fc -s\r')
+end, { desc = 'Run previous terminal command' })

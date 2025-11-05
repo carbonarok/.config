@@ -156,13 +156,15 @@ return {
           return diagnostic_message[diagnostic.severity]
         end,
       },
+      filter = function(diagnostics)
+        return diagnostics ~= 'spell'
+      end,
     })
 
     local capabilities = require('blink.cmp').get_lsp_capabilities()
 
     local servers = {
       clangd = {},
-      -- gopls = {},
       pyright = {},
       rust_analyzer = {},
 
@@ -171,14 +173,11 @@ return {
           Lua = {
             completion = {
               callSnippet = 'Replace',
-              -- spacing = 2,
             },
           },
         },
       },
       ts_ls = { -- use ts_ls (tsserver is deprecated)
-        -- You can prefer project-local tsserver by setting cmd, if needed.
-        -- cmd = { "typescript-language-server", "--stdio" },
         settings = {
           typescript = {
             inlayHints = { includeInlayParameterNameHints = 'all' },
@@ -213,14 +212,7 @@ return {
         },
       },
 
-      -- eslint = {
-      --   settings = {
-      --     -- Run on save if you want auto-fix:
-      --     -- codeActionOnSave = { enable = true, mode = "all" },
-      --     -- format = { enable = true},
-      --     -- experimental: { useFlatConfig = true }, -- if you're on flat config
-      --   },
-      -- },
+      ltex = {},
       html = {},
       cssls = {},
       emmet_ls = {}, -- Emmet in HTML/CSS/JSX/TSX
