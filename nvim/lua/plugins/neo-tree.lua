@@ -73,6 +73,13 @@ return {
       window = {
         use_default_mappings = true,
         mappings = {
+          ['<cr>'] = function(state)
+            local node = state.tree:get_node()
+            if node.path:match('/%.?venv/') then
+              return
+            end
+            require('neo-tree.sources.filesystem.commands').open(state)
+          end,
           ['<space>'] = 'none',
           ['\\'] = 'close_window',
           ['h'] = 'close_node',
