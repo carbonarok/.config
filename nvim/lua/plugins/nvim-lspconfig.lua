@@ -77,6 +77,18 @@ return {
           end
         end, '[G]oto [C]opy Error')
 
+        -- Show line error message
+        map('gre', function()
+          local err = vim.lsp.diagnostic.get_line_diagnostics()
+          if err ~= nil and #err > 0 then
+            err_msg = ''
+            for _, e in ipairs(err) do
+              err_msg = err_msg .. e.message .. '\n'
+            end
+            vim.notify(err_msg, vim.log.levels.INFO)
+          end
+        end, '[S]how [E]rror')
+
         -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
         ---@param client vim.lsp.Client
         ---@param method vim.lsp.protocol.Method

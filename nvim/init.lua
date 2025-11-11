@@ -67,6 +67,9 @@ vim.o.confirm = true
 vim.o.termguicolors = true
 vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,localoptions'
 
+-- File path
+vim.o.winbar = '%=%f%m'
+
 vim.opt.iskeyword:append({ '-', '_' })
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -287,14 +290,18 @@ require('lazy').setup({
           mappings = {
             -- n = { ['<Space>'] = telescope.select_default },
             i = {
-              ['<C-l>'] = telescope.select_vertical,
-              ['<CR>'] = telescope.select_vertical,
+              ['<CR>'] = telescope.select_default, -- open with current window
+              ['<C-x>'] = telescope.select_horizontal, -- split
+              ['<C-v>'] = telescope.select_vertical, -- vsplit
+              ['<C-t>'] = telescope.select_tab,
             },
             n = {
               ['<C-q>'] = false,
-              ['<CR>'] = telescope.select_vertical,
-              ['l'] = telescope.select_vertical,
               ['<leader>s'] = telescope.send_to_qflist + telescope.open_qflist,
+              ['s'] = telescope.select_horizontal,
+              ['v'] = telescope.select_vertical,
+              ['t'] = telescope.select_tab,
+              ['l'] = telescope.select_default,
             },
           },
         },
