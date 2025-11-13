@@ -109,3 +109,7 @@ vim.keymap.set('n', '<leader>rp', function()
   local bt = require('betterTerm')
   bt.send('fc -s\r')
 end, { desc = 'Run previous terminal command' })
+
+vim.keymap.set('n', '<leader>tv', function()
+  require('betterTerm').open(nil, { direction = 'vertical' })
+end, { desc = 'Open BetterTerm vertically' })
