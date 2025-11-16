@@ -10,7 +10,22 @@ return {
   },
   lazy = false,
   keys = {
-    { '\\', ':Neotree reveal<CR>', desc = 'NeoTree reveal', silent = true },
+    -- Files (filesystem source)
+    { '\\', ':Neotree source=filesystem reveal position=right<CR>', desc = 'NeoTree Files', silent = true },
+
+    -- Git status: show only files affected by git
+    {
+      '<leader>gt',
+      function()
+        require('neo-tree.command').execute({
+          source = 'git_status',
+          position = 'right',
+          toggle = true, -- open if closed, close if already on git_status
+        })
+      end,
+      desc = 'NeoTree Git status',
+      silent = true,
+    },
   },
   opts = {
     sync_root_with_cwd = true,
@@ -19,53 +34,46 @@ return {
       enable = true,
       update_root = true,
     },
+
     event_handlers = {
       {
         event = 'neo_tree_buffer_enter',
         handler = function()
           vim.opt_local.number = true
           vim.opt_local.relativenumber = true
-          vim.cmd([[
-          setlocal relativenumber
-        ]])
         end,
       },
     },
+
+    -- tabs at the top (one active source at a time)
     source_selector = {
-      winbar = true,
+      winbar = false,
       statusline = false,
       show_scrolled_off_parent_node = false,
       sources = {
         { source = 'filesystem', display_name = ' 󰉓 Files ' },
-        { source = 'buffers', display_name = '  Buffers ' },
         { source = 'git_status', display_name = ' 󰊢 Git ' },
       },
       content_layout = 'start',
       tabs_layout = 'equal',
       truncation_character = '…',
-      tabs_min_width = nil,
-      tabs_max_width = nil,
       padding = 0,
       separator = { left = '▏', right = '▕' },
-      separator_active = nil,
-      show_separator_on_edge = false,
       highlight_tab = 'NeoTreeTabInactive',
       highlight_tab_active = 'NeoTreeTabActive',
       highlight_background = 'NeoTreeTabInactive',
       highlight_separator = 'NeoTreeTabSeparatorInactive',
       highlight_separator_active = 'NeoTreeTabSeparatorActive',
     },
-    window = { use_default_mappings = true },
+
+    window = {
+      use_default_mappings = true,
+    },
+
     filesystem = {
-      -- follow_current_file = { enabled = true },
       follow_current_file = { enabled = true, leave_dirs_open = true },
       use_libuv_file_watcher = true,
       bind_to_cwd = true,
-      buffers = {
-        follow_current_file = true,
-        group_empty_dirs = true,
-        show_unloaded = true,
-      },
       cwd_target = {
         sidebar = 'tab',
         current = 'window',
@@ -104,5 +112,7 @@ return {
         },
       },
     },
+
+    -- (optional) you can also add a top-level `git_status = {}` section to tweak how it looks
   },
 }

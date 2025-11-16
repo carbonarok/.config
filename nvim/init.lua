@@ -504,13 +504,18 @@ require('lazy').setup({
   --   end,
   -- },
 
-  {
-    'rebelot/kanagawa.nvim',
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme('kanagawa')
-    end,
-  },
+  -- {
+  --   'scottmckendry/cyberdream.nvim',
+  --   priority = 1000,
+  --   config = function()
+  --     vim.cmd.colorscheme('cyberdream')
+  --     local transparent = true
+  --     vim.g.cyberdream_transparent = transparent
+  --     vim.g.cyberdream_contrast = 0.8
+  --     vim.g.cyberdream_brightness = 0.8
+  --     vim.g.cyberdream_saturation = 0.8
+  --   end,
+  -- },
 
   {
     'folke/todo-comments.nvim',
@@ -559,6 +564,7 @@ require('lazy').setup({
   require('plugins.indent-blankline'),
   require('plugins.nvim-treesitter'),
   require('plugins.vimtex'),
+  require('plugins.typr'),
   -- require('plugins.nvim-treesitter-rainbow'),
   -- require('kickstart.plugins.debug'),
   require('kickstart.plugins.lint'),
@@ -566,6 +572,7 @@ require('lazy').setup({
   require('kickstart.plugins.gitsigns'),
   require('plugins.auto-format'),
   require('plugins.galaxyline'),
+  require('plugins.colour-scheme'),
 }, {
   ui = {
     icons = vim.g.have_nerd_font and {} or {
