@@ -29,12 +29,13 @@ config.adjust_window_size_when_changing_font_size = false
 config.window_background_opacity = 1
 config.text_background_opacity = 1.0
 
+local background_path = wezterm.config_dir .. "/.config/wezterm/backgrounds"
 local image_paths = {
-	"/Users/opti-mac/Documents/Images/mountains_torres.jpg",
-	"/Users/opti-mac/Documents/Images/breathtaking_panorama-wallpaper-1366x768.jpg",
-	"/Users/opti-mac/Documents/Images/peak_nuptse_mountain_nepal_mahalangur_himal_himalayas-wallpaper-1600x900.jpg",
-	"/Users/opti-mac/Documents/Images/most_beautiful_mountain_ranges_in_the_world-wallpaper-1366x768.jpg",
-	"/Users/opti-mac/Documents/Images/glacier_lake_mountains_panoramic_view-wallpaper-3840x1600.jpg",
+	background_path .. "/mountains_torres.jpg",
+	background_path .. "/breathtaking_panorama-wallpaper-1366x768.jpg",
+	background_path .. "/peak_nuptse_mountain_nepal_mahalangur_himal_himalayas-wallpaper-1600x900.jpg",
+	background_path .. "/most_beautiful_mountain_ranges_in_the_world-wallpaper-1366x768.jpg",
+	background_path .. "/glacier_lake_mountains_panoramic_view-wallpaper-3840x1600.jpg",
 }
 
 math.randomseed(os.time())
