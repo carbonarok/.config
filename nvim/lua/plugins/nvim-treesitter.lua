@@ -31,6 +31,8 @@ return {
           ['if'] = '@function.inner',
           ['ac'] = '@class.outer',
           ['ic'] = '@class.inner',
+          ['ai'] = '@block.outer',
+          ['ii'] = '@block.inner',
         },
       },
       move = {

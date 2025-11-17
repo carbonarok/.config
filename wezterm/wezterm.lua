@@ -29,7 +29,7 @@ config.adjust_window_size_when_changing_font_size = false
 config.window_background_opacity = 1
 config.text_background_opacity = 1.0
 
-local background_path = wezterm.config_dir .. "/.config/wezterm/backgrounds"
+local background_path = wezterm.config_dir .. "/.config/wezterm/assets"
 local image_paths = {
 	background_path .. "/mountains_torres.jpg",
 	background_path .. "/breathtaking_panorama-wallpaper-1366x768.jpg",
@@ -48,6 +48,15 @@ config.window_background_image_hsb = {
 	saturation = 1.0,
 }
 config.macos_window_background_blur = 20
+config.window_padding = {
+	top = 0,
+	right = 0,
+	bottom = 0,
+	left = 0,
+}
+
+config.max_fps = 120
+config.prefer_egl = true
 
 ------------------------------------------------------------
 -- CMD → ALT (META) MAPPINGS
@@ -129,6 +138,7 @@ local tab_keys = {
 		mods = "CMD|SHIFT",
 		action = wezterm.action.ActivateTabRelative(-1),
 	},
+
 	-- Jump directly to tab N (0–8)
 	{ key = "1", mods = "CMD", action = wezterm.action.ActivateTab(0) },
 	{ key = "2", mods = "CMD", action = wezterm.action.ActivateTab(1) },
@@ -176,12 +186,12 @@ local leader_keys = {
 	{
 		key = "-",
 		mods = "LEADER",
-		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
 	},
 	{
 		key = "\\",
 		mods = "LEADER",
-		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
+		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
 	},
 
 	-- Panes: navigate (Leader + h/j/k/l)
@@ -239,5 +249,12 @@ end
 ------------------------------------------------------------
 config.send_composed_key_when_left_alt_is_pressed = true
 config.send_composed_key_when_right_alt_is_pressed = true
+
+-- Add custom commands
+local commands = require("commands.init")
+
+wezterm.on("augment-command-palette", function(window, pane)
+	return commands
+end)
 
 return config
