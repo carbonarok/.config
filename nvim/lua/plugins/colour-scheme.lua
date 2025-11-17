@@ -44,5 +44,26 @@ return {
     vim.api.nvim_set_hl(0, 'FloatBorder', { bg = bg_dark, fg = border })
     vim.api.nvim_set_hl(0, 'Pmenu', { bg = bg_dark })
     vim.api.nvim_set_hl(0, 'PmenuSel', { bg = bg_high })
+    vim.api.nvim_set_hl(0, 'WinSeparator', { fg = border, bg = none })
+
+    vim.opt.fillchars = {
+      vert = '│',
+      horiz = '─',
+      horizup = '┴',
+      horizdown = '┬',
+      vertleft = '┤',
+      vertright = '├',
+      verthoriz = '┼',
+    }
+
+    vim.api.nvim_set_hl(0, 'TelescopeNormal', { bg = none })
+    vim.api.nvim_set_hl(0, 'TelescopePromptNormal', { bg = none })
+    vim.api.nvim_set_hl(0, 'TelescopeResultsNormal', { bg = none })
+    vim.api.nvim_set_hl(0, 'TelescopePreviewNormal', { bg = none })
+
+    vim.api.nvim_set_hl(0, 'TelescopeBorder', { bg = none })
+    vim.api.nvim_set_hl(0, 'TelescopePromptBorder', { bg = none })
+    vim.api.nvim_set_hl(0, 'TelescopeResultsBorder', { bg = none })
+    vim.api.nvim_set_hl(0, 'TelescopePreviewBorder', { bg = none })
   end,
 }

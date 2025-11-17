@@ -67,8 +67,20 @@ vim.o.confirm = true
 vim.o.termguicolors = true
 vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,localoptions'
 
--- File path
 vim.o.winbar = '%=%f%m'
+
+vim.opt.laststatus = 3
+vim.opt.showtabline = 2
+
+vim.opt.fillchars = {
+  vert = '│',
+  horiz = '─',
+  horizup = '┴',
+  horizdown = '┬',
+  vertleft = '┤',
+  vertright = '├',
+  verthoriz = '┼',
+}
 
 vim.opt.iskeyword:append({ '-', '_' })
 -- [[ Basic Keymaps ]]
@@ -276,6 +288,9 @@ require('lazy').setup({
         --  All the info you're looking for is in `:help telescope.setup()`
         --
         defaults = {
+          border = true,
+          borderchars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰' },
+          winblend = 0,
           entry_maker = function(entry)
             local filename = vim.fn.fnamemodify(entry.filename or entry.value.filename, ':.')
             local lnum = entry.lnum or entry.value.lnum
