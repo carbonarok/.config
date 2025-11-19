@@ -164,6 +164,16 @@ local tab_keys = {
 		mods = "CMD",
 		action = wezterm.action.ToggleFullScreen,
 	},
+	{
+		key = "=",
+		mods = "CMD",
+		action = wezterm.action.IncreaseFontSize,
+	},
+	{
+		key = "-",
+		mods = "CMD",
+		action = wezterm.action.DecreaseFontSize,
+	},
 }
 
 for _, mapping in ipairs(tab_keys) do
