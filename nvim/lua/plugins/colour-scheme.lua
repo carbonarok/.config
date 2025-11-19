@@ -65,5 +65,10 @@ return {
     vim.api.nvim_set_hl(0, 'TelescopePromptBorder', { bg = none })
     vim.api.nvim_set_hl(0, 'TelescopeResultsBorder', { bg = none })
     vim.api.nvim_set_hl(0, 'TelescopePreviewBorder', { bg = none })
+
+    vim.api.nvim_set_hl(0, 'CmpPmenu', { bg = 'NONE' })
+    vim.api.nvim_set_hl(0, 'CmpPmenuBorder', { bg = 'NONE', fg = border })
+    vim.api.nvim_set_hl(0, 'CmpPmenuSel', { bg = bg_high }) -- selected item
+    vim.api.nvim_set_hl(0, 'CmpPmenuThumb', { bg = 'NONE' })
   end,
 }

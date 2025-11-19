@@ -145,7 +145,7 @@ return {
     -- See :help vim.diagnostic.Opts
     vim.diagnostic.config({
       severity_sort = true,
-      float = { border = 'rounded', source = 'if_many' },
+      float = { border = 'rounded', source = 'if_many', wrap = true },
       underline = { severity = vim.diagnostic.severity.ERROR },
       signs = vim.g.have_nerd_font and {
         text = {
@@ -155,6 +155,8 @@ return {
           [vim.diagnostic.severity.HINT] = '󰌶 ',
         },
       } or {},
+      -- virtual_text = false,
+
       virtual_text = {
         source = 'if_many',
         spacing = 2,
@@ -178,7 +180,37 @@ return {
     local servers = {
       clangd = {},
       pyright = {},
-      rust_analyzer = {},
+      rust_analyzer = {
+        on_attach = function(client, bufnr)
+          require('lsp_signature').on_attach({
+            bind = true,
+            handler_opts = {
+              border = 'rounded',
+            },
+          })
+        end,
+        settings = {
+          ['rust-analyzer'] = {
+            checkOnSave = {
+              command = 'clippy',
+            },
+            cargo = {
+              autoreload = true,
+              allFeatures = true,
+            },
+            procMacro = {
+              enable = true,
+            },
+            diagnostics = {
+              disabled = { 'unresolved-proc-macro' },
+              enable = true,
+            },
+            lens = {
+              enable = true,
+            },
+          },
+        },
+      },
 
       lua_ls = {
         settings = {

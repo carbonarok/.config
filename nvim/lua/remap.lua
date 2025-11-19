@@ -1,22 +1,3 @@
-vim.keymap.set('n', '<leader>/', function()
-  require('telescope.builtin').live_grep({
-    prompt_title = '🔍 Search in files',
-    cwd = vim.loop.cwd(),
-  })
-end, { desc = 'Search all files' })
-
-vim.keymap.set('n', '<leader>k', function()
-  require('telescope.builtin').keymaps()
-end, { desc = 'Search keymaps' })
-
-vim.keymap.set('n', '<leader>f', function()
-  require('telescope.builtin').find_files()
-end, { desc = 'Search files' })
-
-vim.keymap.set('n', '<leader>s', function()
-  require('telescope.builtin').grep_string()
-end, { desc = 'Search string' })
-
 local function map(mode, lhs, rhs, opts)
   local options = { noremap = true, silent = true }
   if opts then
@@ -113,3 +94,30 @@ end, { desc = 'Run previous terminal command' })
 vim.keymap.set('n', '<leader>tv', function()
   require('betterTerm').open(nil, { direction = 'vertical' })
 end, { desc = 'Open BetterTerm vertically' })
+
+-- Search center
+vim.keymap.set('n', 'n', 'nzzzv', { desc = 'Search center' })
+vim.keymap.set('n', 'N', 'Nzzzv', { desc = 'Search center' })
+
+-- Save and quit
+vim.keymap.set('n', '<leader>w', ':w<CR>', { desc = 'Save' })
+vim.keymap.set('n', '<leader>q', ':q<CR>', { desc = 'Quit' })
+vim.keymap.set('n', '<leader>wq', ':wq<CR>', { desc = 'Save and quit' })
+
+-- Resize
+vim.keymap.set('n', '<A-h>', ':vertical resize -2<CR>', { desc = 'Resize pane up' })
+vim.keymap.set('n', '<A-l>', ':vertical resize +2<CR>', { desc = 'Resize pane down' })
+vim.keymap.set('n', '<A-k>', ':resize -2<CR>', { desc = 'Resize pane left' })
+vim.keymap.set('n', '<A-j>', ':resize +2<CR>', { desc = 'Resize pane right' })
+
+-- Selected pasted text
+vim.keymap.set('n', 'gp', '`[v`]', {})
+
+-- Jump to indentation
+vim.keymap.set('n', '<leader>j', '^', { desc = 'Jump to indentation' })
+vim.keymap.set('v', '<leader>j', '^', { desc = 'Jump to indentation' })
+vim.keymap.set('n', '<leader>I', '$', { desc = 'Jump to indentation' })
+vim.keymap.set('v', '<leader>I', '$', { desc = 'Jump to indentation' })
+
+-- Sort in Visual mode
+vim.keymap.set('v', '<leader>s', ':sort<CR>', { desc = 'Sort in Visual mode' })

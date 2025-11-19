@@ -31,6 +31,7 @@ return { -- Autoformat
     formatters_by_ft = {
       lua = { 'stylua' },
       python = { 'black' },
+      rust = { 'rustfmt' },
       javascript = { 'prettier' },
       javascriptreact = { 'prettier' },
       typescript = { 'prettier' },
@@ -53,7 +54,6 @@ return { -- Autoformat
       proto3 = { 'buf' },
       gql = { 'buf' },
       gql2 = { 'buf' },
-      graphql = { 'buf' },
       go = { 'buf' },
       sh = { 'shfmt' },
       bash = { 'shfmt' },
