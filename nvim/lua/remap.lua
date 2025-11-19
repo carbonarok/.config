@@ -28,12 +28,6 @@ map('x', '<leader>p', '"_dP')
 map('n', '<leader>gs', '<cmd>Telescope git_status<CR>', opts)
 map('n', '<leader>r', '<cmd>source $MYVIMRC<CR>', opts)
 
--- Window moving
-map('n', '<leader>wh', '<C-w>H', opts)
-map('n', '<leader>wj', '<C-w>J', opts)
-map('n', '<leader>wk', '<C-w>K', opts)
-map('n', '<leader>wl', '<C-w>L', opts)
-
 -- Buffer switching
 map('n', '<leader>1', '<cmd>BufferLineGoToBuffer 1<CR>', opts)
 map('n', '<leader>2', '<cmd>BufferLineGoToBuffer 2<CR>', opts)
@@ -98,7 +92,7 @@ vim.keymap.set('n', 'N', 'Nzzzv', { desc = 'Search center' })
 -- Save and quit
 vim.keymap.set('n', '<leader>w', ':w<CR>', { desc = 'Save' })
 vim.keymap.set('n', '<leader>q', ':q<CR>', { desc = 'Quit' })
-vim.keymap.set('n', '<leader>wq', ':wq<CR>', { desc = 'Save and quit' })
+vim.keymap.set('n', '<leader>wq', ':wqa<CR>', { desc = 'Save and quit' })
 
 -- Resize
 vim.keymap.set('n', '<A-h>', ':vertical resize -2<CR>', { desc = 'Resize pane up' })
