@@ -155,6 +155,7 @@ require('lazy').setup({
   require('plugins.colour-scheme'),
   require('plugins.comment'),
   require('plugins.cspell'),
+  require('plugins.diffview'),
   require('plugins.galaxyline'),
   require('plugins.gitsigns'),
   require('plugins.harpoon'),

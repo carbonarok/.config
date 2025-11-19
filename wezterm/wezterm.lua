@@ -5,6 +5,8 @@ if wezterm.config_builder then
 	config = wezterm.config_builder()
 end
 
+config.disable_default_key_bindings = true
+
 ------------------------------------------------------------
 -- FONT / UI
 ------------------------------------------------------------
