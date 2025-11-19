@@ -1,4 +1,5 @@
 local wezterm = require("wezterm")
+local C = require("lua/consts")
 
 local config = {}
 if wezterm.config_builder then
@@ -37,24 +38,6 @@ config.adjust_window_size_when_changing_font_size = false
 config.window_background_opacity = 1
 config.text_background_opacity = 1.0
 
-local background_path = wezterm.config_dir .. "/.config/wezterm/assets"
-local image_paths = {
-	background_path .. "/mountains_torres.jpg",
-	background_path .. "/breathtaking_panorama-wallpaper-1366x768.jpg",
-	background_path .. "/peak_nuptse_mountain_nepal_mahalangur_himal_himalayas-wallpaper-1600x900.jpg",
-	background_path .. "/most_beautiful_mountain_ranges_in_the_world-wallpaper-1366x768.jpg",
-	background_path .. "/glacier_lake_mountains_panoramic_view-wallpaper-3840x1600.jpg",
-}
-
-math.randomseed(os.time())
-local random_image = image_paths[math.random(#image_paths)]
-config.window_background_image = random_image
-
-config.window_background_image_hsb = {
-	brightness = 0.04,
-	hue = 1.0,
-	saturation = 1.0,
-}
 config.macos_window_background_blur = 20
 config.window_padding = {
 	top = 0,
@@ -255,6 +238,12 @@ local leader_keys = {
 		mods = "LEADER|SHIFT",
 		action = wezterm.action.AdjustPaneSize({ "Right", 3 }),
 	},
+	-- Open command palette
+	{
+		key = "p",
+		mods = "LEADER",
+		action = wezterm.action.ActivateCommandPalette,
+	},
 }
 
 for _, mapping in ipairs(leader_keys) do
@@ -275,6 +264,27 @@ local commands = require("commands.init")
 
 wezterm.on("augment-command-palette", function(window, pane)
 	return commands
+end)
+
+local mux = wezterm.mux
+
+wezterm.on("gui-startup", function(cmd)
+	-- Create the initial window (WezTerm won't do this automatically once this handler exists)
+	local tab, pane, window = mux.spawn_window(cmd or {})
+
+	-- Pick a random background image
+	math.randomseed(os.time())
+	local random_image = C.IMAGE_PATHS[math.random(#C.IMAGE_PATHS)]
+
+	-- Apply overrides to the GUI window
+	window:gui_window():set_config_overrides({
+		window_background_image = random_image,
+		window_background_image_hsb = {
+			brightness = 0.04,
+			hue = 1.0,
+			saturation = 1.0,
+		},
+	})
 end)
 
 return config
