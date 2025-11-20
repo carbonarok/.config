@@ -183,6 +183,18 @@ local leader_keys = {
 		action = wezterm.action.CloseCurrentTab({ confirm = false }),
 	},
 
+	-- Name Tab
+	{
+		key = "n",
+		mods = "LEADER",
+		action = wezterm.action.PromptInputLine({
+			description = "Enter new name for tab:",
+			action = wezterm.action_callback(function(window, pane, line)
+				window:active_tab():set_title(line)
+			end),
+		}),
+	},
+
 	-- Panes: split
 	{
 		key = "-",

@@ -106,8 +106,8 @@ vim.keymap.set('n', 'gp', '`[v`]', {})
 -- Jump to indentation
 vim.keymap.set('n', '<leader>j', '^', { desc = 'Jump to indentation' })
 vim.keymap.set('v', '<leader>j', '^', { desc = 'Jump to indentation' })
-vim.keymap.set('n', '<leader>I', '$', { desc = 'Jump to indentation' })
-vim.keymap.set('v', '<leader>I', '$', { desc = 'Jump to indentation' })
+vim.keymap.set('n', '<leader>i', '$', { desc = 'Jump to indentation' })
+vim.keymap.set('v', '<leader>i', '$', { desc = 'Jump to indentation' })
 
 -- Sort in Visual mode
 vim.keymap.set('v', '<leader>s', ':sort<CR>', { desc = 'Sort in Visual mode' })
