@@ -292,7 +292,7 @@ wezterm.on("gui-startup", function(cmd)
 	window:gui_window():set_config_overrides({
 		window_background_image = random_image,
 		window_background_image_hsb = {
-			brightness = 0.04,
+			brightness = 0.06,
 			hue = 1.0,
 			saturation = 1.0,
 		},
