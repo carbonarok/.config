@@ -89,6 +89,20 @@ return {
           end
         end, '[S]how [E]rror')
 
+        -- Show type of symbol under cursor
+        map('grv', function()
+          local symbol = vim.fn.expand('<cword>')
+          local type = vim.lsp.buf.signature_help()
+          if type ~= nil then
+            local signature = type[1].signature
+            for _, param in ipairs(signature) do
+              if param.label == symbol then
+                vim.notify(param.label .. ' ' .. param.documentation, vim.log.levels.INFO)
+              end
+            end
+          end
+        end, '[S]how [T]ype')
+
         -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
         ---@param client vim.lsp.Client
         ---@param method vim.lsp.protocol.Method
@@ -134,7 +148,7 @@ return {
         end
 
         if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
-          map('<leader>th', function()
+          map('<leader>lh', function()
             vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
           end, '[T]oggle Inlay [H]ints')
         end

@@ -17,6 +17,13 @@ vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
 end)
 
+-- Enable autoread
+vim.o.autoread = true
+
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI' }, {
+  command = 'checktime',
+})
+
 -- Enable break indent
 vim.o.breakindent = true
 
@@ -121,6 +128,12 @@ vim.keymap.set('i', '<A-j>', '<Down>')
 vim.keymap.set('i', '<A-k>', '<Up>')
 vim.keymap.set('i', '<A-l>', '<Right>')
 
+-- Disable arrow key movements
+vim.keymap.set('n', '<Left>', '<NOP>')
+vim.keymap.set('n', '<Right>', '<NOP>')
+vim.keymap.set('n', '<Up>', '<NOP>')
+vim.keymap.set('n', '<Down>', '<NOP>')
+
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
@@ -178,6 +191,7 @@ require('lazy').setup({
   require('plugins.nvim-treesitter'),
   require('plugins.octo'),
   require('plugins.project'),
+  require('plugins.rustaceanvim'),
   require('plugins.supermaven'),
   require('plugins.telescope'),
   require('plugins.to-do'),

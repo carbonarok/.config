@@ -13,7 +13,7 @@ local command = {
 
 			-- Optional: dim the image when enabled
 			overrides.window_background_image_hsb = {
-				brightness = 0.06,
+				brightness = 0.04,
 				hue = 1.0,
 				saturation = 1.0,
 			}

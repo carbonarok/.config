@@ -114,7 +114,7 @@ local tab_keys = {
 	},
 	-- Close tab
 	{
-		key = "w",
+		key = "c",
 		mods = "CMD",
 		action = wezterm.action.CloseCurrentTab({ confirm = true }),
 	},
@@ -281,18 +281,14 @@ end)
 local mux = wezterm.mux
 
 wezterm.on("gui-startup", function(cmd)
-	-- Create the initial window (WezTerm won't do this automatically once this handler exists)
 	local tab, pane, window = mux.spawn_window(cmd or {})
-
-	-- Pick a random background image
 	math.randomseed(os.time())
 	local random_image = C.IMAGE_PATHS[math.random(#C.IMAGE_PATHS)]
 
-	-- Apply overrides to the GUI window
 	window:gui_window():set_config_overrides({
 		window_background_image = random_image,
 		window_background_image_hsb = {
-			brightness = 0.06,
+			brightness = 0.04,
 			hue = 1.0,
 			saturation = 1.0,
 		},

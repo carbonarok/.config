@@ -26,7 +26,7 @@ map('n', '<C-d>', '<C-d>zz', opts)
 
 map('x', '<leader>p', '"_dP')
 map('n', '<leader>gs', '<cmd>Telescope git_status<CR>', opts)
-map('n', '<leader>r', '<cmd>source $MYVIMRC<CR>', opts)
+-- map('n', '<leader>r', '<cmd>source $MYVIMRC<CR>', opts)
 
 -- Buffer switching
 map('n', '<leader>1', '<cmd>BufferLineGoToBuffer 1<CR>', opts)
@@ -80,7 +80,7 @@ vim.keymap.set('v', '<A-d>', ":m '>+1<CR>gv=gv", { silent = true })
 vim.keymap.set('v', '<A-u>', ":m '<-2<CR>gv=gv", { silent = true })
 
 -- Run previous command in better-term terminal
-vim.keymap.set('n', '<leader>rp', function()
+vim.keymap.set('n', '<leader>tp', function()
   local bt = require('betterTerm')
   bt.send('fc -s\r')
 end, { desc = 'Run previous terminal command' })
@@ -95,10 +95,10 @@ vim.keymap.set('n', '<leader>q', ':q<CR>', { desc = 'Quit' })
 vim.keymap.set('n', '<leader>wq', ':wqa<CR>', { desc = 'Save and quit' })
 
 -- Resize
-vim.keymap.set('n', '<A-h>', ':vertical resize -2<CR>', { desc = 'Resize pane up' })
-vim.keymap.set('n', '<A-l>', ':vertical resize +2<CR>', { desc = 'Resize pane down' })
-vim.keymap.set('n', '<A-k>', ':resize -2<CR>', { desc = 'Resize pane left' })
-vim.keymap.set('n', '<A-j>', ':resize +2<CR>', { desc = 'Resize pane right' })
+vim.keymap.set('n', '<A-l>', '<cmd>vertical resize +2<CR>', { desc = 'Increase width' })
+vim.keymap.set('n', '<A-h>', '<cmd>vertical resize -2<CR>', { desc = 'Decrease width' })
+vim.keymap.set('n', '<A-j>', '<cmd>resize +2<CR>', { desc = 'Increase height' })
+vim.keymap.set('n', '<A-k>', '<cmd>resize -2<CR>', { desc = 'Decrease height' })
 
 -- Selected pasted text
 vim.keymap.set('n', 'gp', '`[v`]', {})
@@ -111,3 +111,9 @@ vim.keymap.set('v', '<leader>i', '$', { desc = 'Jump to indentation' })
 
 -- Sort in Visual mode
 vim.keymap.set('v', '<leader>s', ':sort<CR>', { desc = 'Sort in Visual mode' })
+
+-- Delete key in insert mode
+vim.keymap.set('i', '<C-l>', '<DEL>', { desc = 'Delete key in insert mode' })
+
+vim.keymap.set('n', 'H', '^', { noremap = true, desc = 'Start of line' })
+vim.keymap.set('n', 'L', '$', { noremap = true, desc = 'End of line' })
