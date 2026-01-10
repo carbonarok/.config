@@ -69,6 +69,7 @@ vim.o.scrolloff = 10
 vim.o.confirm = true
 
 vim.o.termguicolors = true
+vim.cmd('set t_Co=256')
 vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,localoptions'
 
 vim.o.winbar = '%=%f%m'
@@ -128,11 +129,11 @@ vim.keymap.set('i', '<A-j>', '<Down>')
 vim.keymap.set('i', '<A-k>', '<Up>')
 vim.keymap.set('i', '<A-l>', '<Right>')
 
--- Disable arrow key movements
-vim.keymap.set('n', '<Left>', '<NOP>')
-vim.keymap.set('n', '<Right>', '<NOP>')
-vim.keymap.set('n', '<Up>', '<NOP>')
-vim.keymap.set('n', '<Down>', '<NOP>')
+-- Terminal movements
+vim.keymap.set('t', '<A-h>', '<Left>')
+vim.keymap.set('t', '<A-j>', '<Down>')
+vim.keymap.set('t', '<A-k>', '<Up>')
+vim.keymap.set('t', '<A-l>', '<Right>')
 
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
@@ -170,7 +171,7 @@ require('lazy').setup({
   require('kickstart.plugins.lint'),
   require('plugins.auto-format'),
   require('plugins.auto-session'),
-  require('plugins.betterTerm'),
+  -- require('plugins.betterTerm'),
   require('plugins.blink'),
   require('plugins.bufferline'),
   require('plugins.colour-scheme'),
@@ -190,6 +191,7 @@ require('lazy').setup({
   require('plugins.nvim-surround'),
   require('plugins.nvim-treesitter'),
   require('plugins.octo'),
+  -- require('plugins.otree'),
   require('plugins.project'),
   require('plugins.rustaceanvim'),
   require('plugins.supermaven'),

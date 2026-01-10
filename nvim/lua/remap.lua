@@ -79,13 +79,66 @@ vim.keymap.set('n', '<A-u>', ':m .-2<CR>==', { silent = true })
 vim.keymap.set('v', '<A-d>', ":m '>+1<CR>gv=gv", { silent = true })
 vim.keymap.set('v', '<A-u>', ":m '<-2<CR>gv=gv", { silent = true })
 
+-- Terminal
+vim.keymap.set('n', '<leader>tt', function()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    if vim.bo[buf].buftype == 'terminal' then
+      vim.api.nvim_win_hide(win)
+      return
+    end
+  end
+  vim.cmd('botright 15split | terminal')
+end, { desc = 'Toggle terminal' })
+
 -- Run previous command in better-term terminal
 vim.keymap.set('n', '<leader>tp', function()
-  local bt = require('betterTerm')
-  bt.send('fc -s\r')
-end, { desc = 'Run previous terminal command' })
+  local bufs = vim.api.nvim_list_bufs()
 
--- Search center
+  for i = #bufs, 1, -1 do
+    local bufnr = bufs[i]
+
+    if vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].buftype == 'terminal' then
+      local ok, job_id = pcall(vim.api.nvim_buf_get_var, bufnr, 'terminal_job_id')
+
+      if ok and type(job_id) == 'number' then
+        -- Send previous command (Up + Enter)
+        vim.fn.chansend(job_id, '\x1b[A\r')
+
+        -- If terminal is visible, scroll it to bottom WITHOUT focusing it
+        local win = vim.fn.bufwinid(bufnr)
+        if win ~= -1 then
+          vim.api.nvim_win_call(win, function()
+            vim.cmd('normal! G')
+          end)
+        end
+
+        return
+      end
+    end
+  end
+
+  vim.notify('No terminal job found', vim.log.levels.WARN)
+end, { desc = 'Run previous terminal command (no focus change)' })
+
+vim.keymap.set('n', '<leader>tl', function()
+  local bufs = vim.api.nvim_list_bufs()
+  for i = #bufs, 1, -1 do
+    local bufnr = bufs[i]
+    if vim.bo[bufnr].buftype == 'terminal' then
+      local ok, job = pcall(vim.api.nvim_buf_get_var, bufnr, 'terminal_job_id')
+      if ok then
+        vim.fn.chansend(job, '\x0c')
+      end -- Ctrl+L
+      return
+    end
+  end
+end, { desc = 'Clear terminal' })
+
+vim.keymap.set('t', '<C-h>', [[<C-\><C-n><C-w>h]])
+vim.keymap.set('t', '<C-j>', [[<C-\><C-n><C-w>j]])
+vim.keymap.set('t', '<C-k>', [[<C-\><C-n><C-w>k]])
+vim.keymap.set('t', '<C-l>', [[<C-\><C-n><C-w>l]])
 vim.keymap.set('n', 'n', 'nzzzv', { desc = 'Search center' })
 vim.keymap.set('n', 'N', 'Nzzzv', { desc = 'Search center' })
 

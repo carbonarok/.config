@@ -162,6 +162,10 @@ return {
         },
         render = { max_type_length = 60 },
       })
+
+      vim.api.nvim_set_hl(0, 'DapStoppedLine', { bg = '#3b2f5c' }) -- background
+      vim.api.nvim_set_hl(0, 'DapStopped', { fg = '#ffcc00' })
+
       require('nvim-dap-virtual-text').setup()
 
       -- dap-install setup + auto-configure installed debuggers

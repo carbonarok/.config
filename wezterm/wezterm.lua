@@ -8,6 +8,23 @@ end
 
 config.disable_default_key_bindings = true
 
+local function is_nvim(pane)
+	local p = pane:get_foreground_process_name() or ""
+	return p:find("nvim") ~= nil or p:find("vim") ~= nil
+end
+
+local function smart_cmd(key, arrow)
+	return wezterm.action_callback(function(win, pane)
+		if is_nvim(pane) then
+			-- Your nvim “CMD as Meta” setup expects <M-h/j/k/l>
+			win:perform_action(wezterm.action.SendKey({ key = key, mods = "ALT" }), pane)
+		else
+			-- Normal terminal: real arrows
+			win:perform_action(wezterm.action.SendKey({ key = arrow }), pane)
+		end
+	end)
+end
+
 ------------------------------------------------------------
 -- FONT / UI
 ------------------------------------------------------------
@@ -114,9 +131,21 @@ local tab_keys = {
 	},
 	-- Close tab
 	{
-		key = "c",
+		key = "x",
 		mods = "CMD",
 		action = wezterm.action.CloseCurrentTab({ confirm = true }),
+	},
+	-- Copy text
+	{
+		key = "c",
+		mods = "CMD",
+		action = wezterm.action.CopyTo("Clipboard"),
+	},
+	-- Paste text
+	{
+		key = "v",
+		mods = "CMD",
+		action = wezterm.action.PasteFrom("Clipboard"),
 	},
 	-- Next / previous tab
 	{
@@ -156,6 +185,31 @@ local tab_keys = {
 		key = "-",
 		mods = "CMD",
 		action = wezterm.action.DecreaseFontSize,
+	},
+	{
+		key = "h",
+		mods = "CMD",
+		action = smart_cmd("h", "LeftArrow"),
+	},
+	{
+		key = "j",
+		mods = "CMD",
+		action = smart_cmd("j", "DownArrow"),
+	},
+	{
+		key = "k",
+		mods = "CMD",
+		action = smart_cmd("k", "UpArrow"),
+	},
+	{
+		key = "l",
+		mods = "CMD",
+		action = smart_cmd("l", "RightArrow"),
+	},
+	{
+		key = ";",
+		mods = "CMD",
+		action = wezterm.action.SendKey({ key = "Enter" }),
 	},
 }
 

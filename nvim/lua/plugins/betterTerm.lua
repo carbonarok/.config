@@ -4,14 +4,6 @@ return {
   keys = {
     {
       mode = { 'n', 't' },
-      '<C-;>',
-      function()
-        require('betterTerm').open()
-      end,
-      desc = 'Open BetterTerm 0',
-    },
-    {
-      mode = { 'n', 't' },
       '<C-/>',
       function()
         require('betterTerm').open(1)

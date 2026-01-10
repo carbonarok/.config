@@ -21,6 +21,8 @@ return {
       'query',
       'vim',
       'vimdoc',
+      'swift',
+      'yaml',
     },
     textobjects = {
       select = {

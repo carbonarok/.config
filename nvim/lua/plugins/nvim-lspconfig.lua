@@ -18,11 +18,6 @@ return {
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
       callback = function(event)
-        -- NOTE: Remember that Lua is a real programming language, and as such it is possible
-        -- to define small helper and utility functions so you don't have to repeat yourself.
-        --
-        -- In this case, we create a function that lets us more easily define mappings specific
-        -- for LSP related items. It sets the mode, buffer and description for us each time.
         local map = function(keys, func, desc, mode)
           mode = mode or 'n'
           vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
@@ -288,11 +283,39 @@ return {
       dockerls = {},
       bashls = {},
       terraformls = {},
+      gopls = {
+        settings = {
+          gopls = {
+            gofumpt = true, -- use gofumpt formatting
+            usePlaceholders = true,
+            completeUnimported = true,
+            staticcheck = true,
+            analyses = {
+              unusedparams = true,
+              nilness = true,
+              unusedwrite = true,
+              shadow = true,
+            },
+            hints = {
+              assignVariableTypes = true,
+              compositeLiteralFields = true,
+              compositeLiteralTypes = true,
+              constantValues = true,
+              functionTypeParameters = true,
+              parameterNames = true,
+              rangeVariableTypes = true,
+            },
+          },
+        },
+      },
     }
 
     local ensure_installed = vim.tbl_keys(servers or {})
 
-    vim.list_extend(ensure_installed, { 'bashls', 'dockerls', 'terraformls', 'shfmt', 'buf', 'markdownlint' })
+    vim.list_extend(
+      ensure_installed,
+      { 'bashls', 'dockerls', 'terraformls', 'shfmt', 'buf', 'markdownlint', 'gofumpt', 'golangci-lint' }
+    )
     require('mason-tool-installer').setup({ ensure_installed = ensure_installed })
 
     require('mason-lspconfig').setup({
@@ -305,5 +328,14 @@ return {
         end,
       },
     })
+
+    vim.lsp.config('sourcekit', {
+      cmd = { 'sourcekit-lsp' }, -- or full path if not on $PATH
+      filetypes = { 'swift' },
+      root_markers = { 'Package.swift', '.git' },
+      capabilities = capabilities,
+    })
+
+    vim.lsp.enable('sourcekit')
   end,
 }
