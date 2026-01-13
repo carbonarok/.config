@@ -171,12 +171,13 @@ require('lazy').setup({
   require('kickstart.plugins.lint'),
   require('plugins.auto-format'),
   require('plugins.auto-session'),
-  -- require('plugins.betterTerm'),
   require('plugins.blink'),
   require('plugins.bufferline'),
+  require('plugins.codediff'),
   require('plugins.colour-scheme'),
   require('plugins.comment'),
   require('plugins.cspell'),
+  require('plugins.django'),
   require('plugins.diffview'),
   require('plugins.galaxyline'),
   require('plugins.gitsigns'),
@@ -191,7 +192,6 @@ require('lazy').setup({
   require('plugins.nvim-surround'),
   require('plugins.nvim-treesitter'),
   require('plugins.octo'),
-  -- require('plugins.otree'),
   require('plugins.project'),
   require('plugins.rustaceanvim'),
   require('plugins.supermaven'),
@@ -203,8 +203,6 @@ require('lazy').setup({
   require('plugins.vim-visual-multi'),
   require('plugins.vimtex'),
   require('plugins.which-key'),
-  -- require('plugins.nvim-treesitter-rainbow'),
-  -- require('kickstart.plugins.debug'),
 }, {
   ui = {
     icons = vim.g.have_nerd_font and {} or {

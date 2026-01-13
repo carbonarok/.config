@@ -170,3 +170,5 @@ vim.keymap.set('i', '<C-l>', '<DEL>', { desc = 'Delete key in insert mode' })
 
 vim.keymap.set('n', 'H', '^', { noremap = true, desc = 'Start of line' })
 vim.keymap.set('n', 'L', '$', { noremap = true, desc = 'End of line' })
+
+vim.keymap.set('n', '<leader>cd', '<cmd>CodeDiff<CR>', { desc = 'CodeDiff' })
