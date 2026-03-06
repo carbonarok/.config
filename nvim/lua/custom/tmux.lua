@@ -79,7 +79,6 @@ local function tmux_get_target_window(title)
   local target = nil
   for _, line in ipairs(res) do
     local id, t = line:match('^(.*)::(.*)$')
-    print(line, id, t)
     if id and t and t:lower():find(title:lower(), 1, true) then
       target = id
       break

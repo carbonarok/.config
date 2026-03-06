@@ -2,11 +2,11 @@ return {
   'Eutrius/Otree.nvim',
   lazy = false,
   dependencies = {
-    -- Optional: Enhanced file operations
     'stevearc/oil.nvim',
-    -- Optional: Icon support
-    -- { "echasnovski/mini.icons", opts = {} },
-    -- "nvim-tree/nvim-web-devicons",
+    's1n7ax/nvim-window-picker',
+  },
+  keys = {
+    { '<leader>e', '<cmd>Otree<CR>', desc = 'Toggle Otree' },
   },
   config = function()
     require('Otree').setup({
@@ -25,21 +25,26 @@ return {
       ignore_patterns = {},
 
       keymaps = {
+        -- Open
         ['<CR>'] = 'actions.select',
         ['l'] = 'actions.select',
+        -- 'w' is handled separately via autocmd to use window-picker
+        ['t'] = 'actions.open_tab',    -- open in tab   (neotree: t)
+        ['s'] = 'actions.open_split',  -- horizontal    (neotree: s)
+        ['v'] = 'actions.open_vsplit', -- vertical      (neotree: v)
+        -- Navigation
         ['h'] = 'actions.close_dir',
-        ['<Esc>'] = 'actions.close_win',
+        ['H'] = 'actions.close_dirs',
+        ['L'] = 'actions.open_dirs',
         ['-'] = 'actions.goto_parent',
         ['+'] = 'actions.goto_dir',
-        -- ['<M-h>'] = 'actions.goto_home_dir',
         ['cd'] = 'actions.change_home_dir',
-        ['L'] = 'actions.open_dirs',
-        ['H'] = 'actions.close_dirs',
+        -- Oil
         ['o'] = 'actions.oil_dir',
         ['O'] = 'actions.oil_into_dir',
-        ['t'] = 'actions.open_tab',
-        ['v'] = 'actions.open_vsplit',
-        ['s'] = 'actions.open_split',
+        -- Misc
+        ['\\'] = 'actions.close_win',
+        ['<Esc>'] = 'actions.close_win',
         ['.'] = 'actions.toggle_hidden',
         ['i'] = 'actions.toggle_ignore',
         ['r'] = 'actions.refresh',
@@ -96,6 +101,24 @@ return {
         cursorline = true,
         border = 'rounded',
       },
+    })
+
+    -- Wire window-picker into 'w' since otree keymaps only accept string action names
+    vim.api.nvim_create_autocmd('FileType', {
+      pattern = 'Otree',
+      callback = function(ev)
+        vim.keymap.set('n', 'w', function()
+          local state = require('Otree.state')
+          local cursor = vim.api.nvim_win_get_cursor(state.win)
+          local node = state.nodes[cursor[1]]
+          if not node or node.type ~= 'file' then return end
+          local picked_win = require('window-picker').pick_window()
+          if picked_win then
+            vim.api.nvim_set_current_win(picked_win)
+            vim.cmd('edit ' .. vim.fn.fnameescape(node.full_path))
+          end
+        end, { buffer = ev.buf, nowait = true, desc = 'Open with window picker' })
+      end,
     })
   end,
 }

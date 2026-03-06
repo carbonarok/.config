@@ -15,105 +15,50 @@ return {
       'mfussenegger/nvim-dap-python',
     },
     keys = {
-      {
-        '<leader>dc',
-        function()
-          require('dap').continue()
-        end,
-        desc = 'DAP Continue',
-      },
-      {
-        '<leader>drr',
-        function()
-          require('dap').restart()
-        end,
-        desc = 'DAP Restart',
-      },
-      {
-        '<leader>do',
-        function()
-          require('dap').step_over()
-        end,
-        desc = 'DAP Step Over',
-      },
-      {
-        '<leader>di',
-        function()
-          require('dap').step_into()
-        end,
-        desc = 'DAP Step Into',
-      },
-      {
-        '<leader>dx',
-        function()
-          require('dap').step_out()
-        end,
-        desc = 'DAP Step Out',
-      },
-      {
-        '<leader>db',
-        function()
-          require('dap').toggle_breakpoint()
-        end,
-        desc = 'DAP Toggle Breakpoint',
-      },
-      {
-        '<leader>dB',
-        function()
-          require('dap').set_breakpoint(vim.fn.input('Breakpoint condition: '))
-        end,
-        desc = 'DAP Conditional Breakpoint',
-      },
-      {
-        '<leader>dl',
-        function()
-          require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: '))
-        end,
-        desc = 'DAP Logpoint',
-      },
-      {
-        '<leader>dr',
-        function()
-          require('dap').repl.open()
-        end,
-        desc = 'DAP REPL',
-      },
-      {
-        '<leader>drl',
-        function()
-          require('dap').run_last()
-        end,
-        desc = 'DAP Run Last',
-      },
-      {
-        '<leader>dev',
-        function()
-          require('dapui').eval()
-        end,
-        desc = 'DAP UI Eval',
-      },
-      {
-        '<leader>dclose',
-        function()
+      -- Meta key bindings (quick access during debugging)
+      { '<M-c>', function() require('dap').continue() end, desc = 'DAP Continue' },
+      { '<M-o>', function() require('dap').step_over() end, desc = 'DAP Step Over' },
+      { '<M-i>', function() require('dap').step_into() end, desc = 'DAP Step Into' },
+      { '<M-x>', function() require('dap').step_out() end, desc = 'DAP Step Out' },
+      { '<M-q>', function()
+          require('dap').terminate()
           require('dapui').close()
-        end,
-        desc = 'DAP UI Close',
-      },
-      {
-        '<leader>de',
-        function()
-          require('dap').close()
-        end,
-        desc = 'DAP Close',
-      },
-      {
-        '<leader>dev',
-        function()
-          require('dapui').eval()
-        end,
-        mode = 'v',
-        desc = 'DAP UI Eval (Visual)',
-      },
+        end, desc = 'DAP Quit/Terminate' },
+      { '<M-b>', function() require('dap').toggle_breakpoint() end, desc = 'DAP Toggle Breakpoint' },
+      { '<M-r>', function() require('dap').restart() end, desc = 'DAP Restart' },
+      { '<M-u>', function() require('dapui').toggle() end, desc = 'DAP UI Toggle' },
+      { '<M-e>', function() require('dapui').eval() end, desc = 'DAP Eval', mode = { 'n', 'v' } },
+
+      -- Leader key bindings (full control)
+      { '<leader>dd', function() require('dap').continue() end, desc = 'Start/Continue' },
+      { '<leader>dc', function() require('dap').continue() end, desc = 'Continue' },
+      { '<leader>do', function() require('dap').step_over() end, desc = 'Step Over' },
+      { '<leader>di', function() require('dap').step_into() end, desc = 'Step Into' },
+      { '<leader>dx', function() require('dap').step_out() end, desc = 'Step Out' },
+      { '<leader>db', function() require('dap').toggle_breakpoint() end, desc = 'Toggle Breakpoint' },
+      { '<leader>dB', function() require('dap').set_breakpoint(vim.fn.input('Condition: ')) end, desc = 'Conditional Breakpoint' },
+      { '<leader>dl', function() require('dap').set_breakpoint(nil, nil, vim.fn.input('Log message: ')) end, desc = 'Logpoint' },
+      { '<leader>dr', function() require('dap').restart() end, desc = 'Restart' },
+      { '<leader>dR', function() require('dap').repl.toggle() end, desc = 'Toggle REPL' },
+      { '<leader>dL', function() require('dap').run_last() end, desc = 'Run Last' },
+      { '<leader>dq', function() require('dap').terminate() end, desc = 'Terminate' },
+      { '<leader>du', function() require('dapui').toggle() end, desc = 'Toggle UI' },
+      { '<leader>de', function() require('dapui').eval() end, desc = 'Eval', mode = { 'n', 'v' } },
+      { '<leader>df', function() require('dapui').float_element() end, desc = 'Float Element' },
+      { '<leader>dh', function() require('dap.ui.widgets').hover() end, desc = 'Hover' },
+      { '<leader>dp', function() require('dap.ui.widgets').preview() end, desc = 'Preview' },
+      { '<leader>ds', function()
+          local widgets = require('dap.ui.widgets')
+          widgets.centered_float(widgets.scopes)
+        end, desc = 'Scopes' },
+      { '<leader>dt', function()
+          local widgets = require('dap.ui.widgets')
+          widgets.centered_float(widgets.threads)
+        end, desc = 'Threads' },
+      { '<leader>dF', function()
+          local widgets = require('dap.ui.widgets')
+          widgets.centered_float(widgets.frames)
+        end, desc = 'Frames' },
     },
     config = function()
       local dap, dapui = require('dap'), require('dapui')

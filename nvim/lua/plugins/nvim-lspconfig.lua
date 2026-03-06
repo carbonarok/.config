@@ -43,6 +43,24 @@ return {
         --  To jump back, press <C-t>.
         map('grd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
 
+        -- Definition in vertical split
+        map('grdv', function()
+          vim.cmd('vsplit')
+          vim.lsp.buf.definition()
+        end, '[G]oto [D]efinition [V]ertical split')
+
+        -- Definition in horizontal split
+        map('grds', function()
+          vim.cmd('split')
+          vim.lsp.buf.definition()
+        end, '[G]oto [D]efinition [S]plit')
+
+        -- Definition in new tab
+        map('grdt', function()
+          vim.cmd('tab split')
+          vim.lsp.buf.definition()
+        end, '[G]oto [D]efinition [T]ab')
+
         -- This is not Goto Definition, this is Goto Declaration.
         --  For example, in C this would take you to the header.
         map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
@@ -84,19 +102,32 @@ return {
           end
         end, '[S]how [E]rror')
 
-        -- Show type of symbol under cursor
-        map('grv', function()
-          local symbol = vim.fn.expand('<cword>')
-          local type = vim.lsp.buf.signature_help()
-          if type ~= nil then
-            local signature = type[1].signature
-            for _, param in ipairs(signature) do
-              if param.label == symbol then
-                vim.notify(param.label .. ' ' .. param.documentation, vim.log.levels.INFO)
-              end
-            end
-          end
-        end, '[S]how [T]ype')
+        -- Hover documentation
+        map('K', vim.lsp.buf.hover, 'Hover Documentation')
+
+        -- Signature help (function parameters)
+        map('<C-k>', vim.lsp.buf.signature_help, 'Signature Help')
+        map('<C-k>', vim.lsp.buf.signature_help, 'Signature Help', 'i')
+
+        -- Diagnostics navigation
+        map('[d', vim.diagnostic.goto_prev, 'Previous Diagnostic')
+        map(']d', vim.diagnostic.goto_next, 'Next Diagnostic')
+        map('[e', function()
+          vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
+        end, 'Previous Error')
+        map(']e', function()
+          vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
+        end, 'Next Error')
+
+        -- Diagnostic float
+        map('gl', vim.diagnostic.open_float, 'Line Diagnostics')
+
+        -- Workspace diagnostics via Telescope
+        map('<leader>ld', require('telescope.builtin').diagnostics, 'Workspace Diagnostics')
+
+        -- Incoming/outgoing calls
+        map('grci', require('telescope.builtin').lsp_incoming_calls, 'Incoming Calls')
+        map('grco', require('telescope.builtin').lsp_outgoing_calls, 'Outgoing Calls')
 
         -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
         ---@param client vim.lsp.Client

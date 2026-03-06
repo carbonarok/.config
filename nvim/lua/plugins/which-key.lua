@@ -44,9 +44,18 @@ return { -- Useful plugin to show you pending keybinds.
 
     -- Document existing key chains
     spec = {
-      { '<leader>s', group = '[S]earch' },
-      { '<leader>T', group = '[T]oggle' },
-      { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+      { '<leader>b', group = 'Buffer' },
+      { '<leader>d', group = 'Debug' },
+      { '<leader>g', group = 'Git' },
+      { '<leader>h', group = 'Git Hunk', mode = { 'n', 'v' } },
+      { '<leader>l', group = 'LSP' },
+      { '<leader>o', group = 'Octo/GitHub' },
+      { '<leader>s', group = 'Search' },
+      { '<leader>t', group = 'Terminal/Tmux' },
+      { '<leader>T', group = 'Toggle' },
+      { 'gr', group = 'LSP Actions' },
+      { 'grd', group = 'Definition' },
+      { 'grc', group = 'Calls' },
     },
   },
 }

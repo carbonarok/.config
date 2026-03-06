@@ -157,15 +157,6 @@ local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
 require('lazy').setup({
-
-  -- { -- Collection of various small independent plugins/modules
-  --   'echasnovski/mini.nvim',
-  --   config = function()
-  --     require('mini.ai').setup({ n_lines = 500 })
-  --     require('mini.surround').setup()
-  --   end,
-  -- },
-
   require('kickstart.plugins.autopairs'),
   require('kickstart.plugins.gitsigns'),
   require('kickstart.plugins.lint'),
@@ -187,6 +178,8 @@ require('lazy').setup({
   require('plugins.local-config'),
   require('plugins.log-highlight'),
   require('plugins.neo-tree'),
+  require('plugins.oil'),
+  require('plugins.otree'),
   require('plugins.nvim-dap'),
   require('plugins.nvim-lspconfig'),
   require('plugins.nvim-surround'),
@@ -203,6 +196,7 @@ require('lazy').setup({
   require('plugins.vim-visual-multi'),
   require('plugins.vimtex'),
   require('plugins.which-key'),
+  require('plugins.window-picker'),
 }, {
   ui = {
     icons = vim.g.have_nerd_font and {} or {

@@ -12,7 +12,13 @@ return {
     local fg_gutter = '#627E97'
     local border = '#547998'
 
-    require('cyberdream').setup({
+    local ok, cyberdream = pcall(require, 'cyberdream')
+    if not ok then
+      vim.cmd('colorscheme habamax')
+      return
+    end
+
+    cyberdream.setup({
       transparent = transparent,
       italic_comments = true,
       hide_fillchars = true,

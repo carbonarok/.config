@@ -50,7 +50,7 @@ config.colors = {
 ------------------------------------------------------------
 -- GENERAL BEHAVIOUR
 ------------------------------------------------------------
-config.scrollback_lines = 5000
+config.scrollback_lines = 10000
 config.adjust_window_size_when_changing_font_size = false
 config.window_background_opacity = 1
 config.text_background_opacity = 1.0
@@ -75,11 +75,18 @@ local function cmd_meta_mappings()
 	local mappings = {}
 
 	-- Keys where we DON'T want CMD to be turned into ALT
-	-- (we reserve these for tab management etc.)
+	-- (we reserve these for WezTerm actions)
 	local reserved = {
-		t = true,
-		w = true,
-		["0"] = true,
+		c = true, -- copy
+		v = true, -- paste
+		t = true, -- new tab
+		x = true, -- close tab
+		f = true, -- search
+		h = true, -- smart navigation
+		j = true, -- smart navigation
+		k = true, -- smart navigation
+		l = true, -- smart navigation
+		["0"] = true, -- reset font
 		["1"] = true,
 		["2"] = true,
 		["3"] = true,
@@ -186,6 +193,36 @@ local tab_keys = {
 		mods = "CMD",
 		action = wezterm.action.DecreaseFontSize,
 	},
+	-- Reset font size
+	{
+		key = "0",
+		mods = "CMD",
+		action = wezterm.action.ResetFontSize,
+	},
+	-- Quick reload config
+	{
+		key = "r",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.ReloadConfiguration,
+	},
+	-- Search scrollback (CMD+f)
+	{
+		key = "f",
+		mods = "CMD",
+		action = wezterm.action.Search({ CaseInSensitiveString = "" }),
+	},
+	-- Quick select mode (URLs, paths, etc.)
+	{
+		key = "u",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.QuickSelect,
+	},
+	-- Open URL under cursor
+	{
+		key = "o",
+		mods = "CMD|SHIFT",
+		action = wezterm.action.OpenLinkAtMouseCursor,
+	},
 	{
 		key = "h",
 		mods = "CMD",
@@ -222,7 +259,7 @@ end
 -- NOTE: On macOS, make sure CTRL+Space is NOT bound in System Settings
 -- (Keyboard Shortcuts), or macOS will eat it before WezTerm sees it.
 ------------------------------------------------------------
-config.leader = { key = "b", mods = "CTRL", timeout_milliseconds = 1500 }
+config.leader = { key = "0", mods = "CTRL" }
 
 local leader_keys = {
 	-- Tabs
@@ -310,6 +347,60 @@ local leader_keys = {
 		mods = "LEADER",
 		action = wezterm.action.ActivateCommandPalette,
 	},
+
+	-- Pane: zoom/maximize toggle
+	{
+		key = "z",
+		mods = "LEADER",
+		action = wezterm.action.TogglePaneZoomState,
+	},
+
+	-- Pane: close current pane
+	{
+		key = "q",
+		mods = "LEADER",
+		action = wezterm.action.CloseCurrentPane({ confirm = true }),
+	},
+
+	-- Pane: rotate panes
+	{
+		key = "Space",
+		mods = "LEADER",
+		action = wezterm.action.RotatePanes("Clockwise"),
+	},
+
+	-- Copy mode (vim-like scrollback navigation)
+	{
+		key = "[",
+		mods = "LEADER",
+		action = wezterm.action.ActivateCopyMode,
+	},
+
+	-- Move tab left/right
+	{
+		key = "<",
+		mods = "LEADER|SHIFT",
+		action = wezterm.action.MoveTabRelative(-1),
+	},
+	{
+		key = ">",
+		mods = "LEADER|SHIFT",
+		action = wezterm.action.MoveTabRelative(1),
+	},
+
+	-- Show tab navigator
+	{
+		key = "w",
+		mods = "LEADER",
+		action = wezterm.action.ShowTabNavigator,
+	},
+
+	-- Show launcher menu
+	{
+		key = "l",
+		mods = "LEADER|SHIFT",
+		action = wezterm.action.ShowLauncher,
+	},
 }
 
 for _, mapping in ipairs(leader_keys) do
@@ -318,12 +409,56 @@ end
 
 ------------------------------------------------------------
 -- ALT BEHAVIOUR
--- Leave ALT mostly for Neovim; WezTerm doesn't bind ALT directly now.
+-- IMPORTANT: Set to false so ALT sends proper escape sequences
+-- that Neovim recognizes as <M-...> mappings
 ------------------------------------------------------------
 config.send_composed_key_when_left_alt_is_pressed = true
-config.send_composed_key_when_right_alt_is_pressed = true
+config.send_composed_key_when_right_alt_is_pressed = false
 
 config.native_macos_fullscreen_mode = true
+
+------------------------------------------------------------
+-- ADDITIONAL SETTINGS
+------------------------------------------------------------
+-- Cursor
+config.default_cursor_style = "BlinkingBar"
+config.cursor_blink_rate = 500
+config.cursor_blink_ease_in = "Constant"
+config.cursor_blink_ease_out = "Constant"
+
+-- Quick select patterns (for CMD+SHIFT+U)
+config.quick_select_patterns = {
+	-- Match file paths
+	"[\\w\\-\\./]+\\.[\\w]+",
+	-- Match URLs
+	"https?://[\\w\\-\\./]+",
+	-- Match git commit hashes
+	"[0-9a-f]{7,40}",
+	-- Match UUIDs
+	"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+}
+
+-- Hyperlink rules (clickable links)
+config.hyperlink_rules = wezterm.default_hyperlink_rules()
+
+-- Add custom rule for file paths
+table.insert(config.hyperlink_rules, {
+	regex = "[./~][\\w\\-\\./]+",
+	format = "file://$0",
+})
+
+-- Inactive pane dimming
+config.inactive_pane_hsb = {
+	saturation = 0.8,
+	brightness = 0.7,
+}
+
+-- Window decorations
+-- config.window_decorations = "RESIZE"
+
+-- Tab bar styling
+config.tab_bar_at_bottom = false
+config.tab_max_width = 32
 
 -- Add custom commands
 local commands = require("commands.init")

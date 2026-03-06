@@ -1,0 +1,474 @@
+{
+    "profiles": [
+        {
+            "complex_modifications": {
+                "parameters": { "basic.to_if_alone_timeout_milliseconds": 500 },
+                "rules": [
+                    {
+                        "description": "Caps Lock → Ctrl (held) / Escape (alone)",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "caps_lock",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "left_control" }],
+                                "to_if_alone": [{ "key_code": "escape" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Combo: Q + W → Ctrl+B (tmux prefix)",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "simultaneous": [
+                                        { "key_code": "q" },
+                                        { "key_code": "w" }
+                                    ]
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "b",
+                                        "modifiers": ["left_control"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Combo: W + E → Tab",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "simultaneous": [
+                                        { "key_code": "w" },
+                                        { "key_code": "e" }
+                                    ]
+                                },
+                                "to": [{ "key_code": "tab" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Combo: E + R → Enter",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "simultaneous": [
+                                        { "key_code": "e" },
+                                        { "key_code": "r" }
+                                    ]
+                                },
+                                "to": [{ "key_code": "return_or_enter" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Combo: U + I → Backspace",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "simultaneous": [
+                                        { "key_code": "u" },
+                                        { "key_code": "i" }
+                                    ]
+                                },
+                                "to": [{ "key_code": "delete_or_backspace" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Combo: I + O → Delete (Forward)",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "simultaneous": [
+                                        { "key_code": "i" },
+                                        { "key_code": "o" }
+                                    ]
+                                },
+                                "to": [{ "key_code": "delete_forward" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Combo: O + P → Escape",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "simultaneous": [
+                                        { "key_code": "o" },
+                                        { "key_code": "p" }
+                                    ]
+                                },
+                                "to": [{ "key_code": "escape" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Combo: X + C → Cmd+Z (undo)",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "simultaneous": [
+                                        { "key_code": "x" },
+                                        { "key_code": "c" }
+                                    ]
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "z",
+                                        "modifiers": ["left_command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Combo: C + V → Cmd+C (copy)",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "simultaneous": [
+                                        { "key_code": "c" },
+                                        { "key_code": "v" }
+                                    ]
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "c",
+                                        "modifiers": ["left_command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Home Row Mods: A → Ctrl / a",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "a",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "left_control" }],
+                                "to_if_alone": [{ "key_code": "a" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Home Row Mods: S → Cmd / s",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "s",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "left_command" }],
+                                "to_if_alone": [{ "key_code": "s" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Home Row Mods: D → Shift / d",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "d",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "left_shift" }],
+                                "to_if_alone": [{ "key_code": "d" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Home Row Mods: F → Option / f",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "f",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "left_option" }],
+                                "to_if_alone": [{ "key_code": "f" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Home Row Mods: J → Option / j",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "j",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "left_option" }],
+                                "to_if_alone": [{ "key_code": "j" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Home Row Mods: K → Shift / k",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "k",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "left_shift" }],
+                                "to_if_alone": [{ "key_code": "k" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Home Row Mods: L → Cmd / l",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "l",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "left_command" }],
+                                "to_if_alone": [{ "key_code": "l" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Home Row Mods: ; → Ctrl / ;",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "semicolon",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "left_control" }],
+                                "to_if_alone": [{ "key_code": "semicolon" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Key Override: Shift + Backspace → Delete",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "delete_or_backspace",
+                                    "modifiers": {
+                                        "mandatory": ["shift"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [{ "key_code": "delete_forward" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Key Override: Shift + Space → Underscore",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "spacebar",
+                                    "modifiers": {
+                                        "mandatory": ["shift"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "hyphen",
+                                        "modifiers": ["left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "One-Shot Shift: Left Shift tap → sticky shift",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "left_shift",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "left_shift" }],
+                                "to_if_alone": [{ "sticky_modifier": { "left_shift": "toggle" } }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "One-Shot Shift: Right Shift tap → sticky shift",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "right_shift",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "right_shift" }],
+                                "to_if_alone": [{ "sticky_modifier": { "right_shift": "toggle" } }],
+                                "type": "basic"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "name": "Default profile",
+            "selected": true,
+            "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" }
+        }
+    ]
+}

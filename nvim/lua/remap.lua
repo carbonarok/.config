@@ -40,22 +40,37 @@ map('n', '<leader>8', '<cmd>BufferLineGoToBuffer 8<CR>', opts)
 map('n', '<leader>9', '<cmd>BufferLineGoToBuffer 9<CR>', opts)
 map('n', '<leader>0', '<cmd>BufferLineGoToBuffer 10<CR>', opts)
 
--- Close all but current
+-- Buffer management (using bufdelete.nvim for <leader>bb)
 vim.keymap.set('n', '<leader>bo', ':BufferLineCloseOthers<CR>', { desc = 'Close others' })
-
--- Close left/right
 vim.keymap.set('n', '<leader>bh', ':BufferLineCloseLeft<CR>', { desc = 'Close left' })
 vim.keymap.set('n', '<leader>bl', ':BufferLineCloseRight<CR>', { desc = 'Close right' })
 
--- Close current (safe)
-vim.keymap.set('n', '<leader>bc', function()
-  local cur_buf = vim.api.nvim_get_current_buf()
-  vim.cmd('bnext') -- move to next buffer
-  vim.cmd('bdelete ' .. cur_buf)
-end, { desc = 'Close current buffer safely' })
+-- Delete all buffers except current
+vim.keymap.set('n', '<leader>ba', function()
+  local bufs = vim.api.nvim_list_bufs()
+  local current = vim.api.nvim_get_current_buf()
+  for _, buf in ipairs(bufs) do
+    if buf ~= current and vim.api.nvim_buf_is_loaded(buf) then
+      pcall(vim.cmd, 'Bdelete ' .. buf)
+    end
+  end
+end, { desc = 'Delete all other buffers' })
 
--- Close ALL (custom)
-vim.keymap.set('n', '<leader>ba', ':%bd|e#<CR>', { desc = 'Close all buffers' })
+-- Pick buffer to delete (with Telescope)
+vim.keymap.set('n', '<leader>bp', function()
+  require('telescope.builtin').buffers({
+    attach_mappings = function(_, tmap)
+      tmap('i', '<CR>', function(prompt_bufnr)
+        local selection = require('telescope.actions.state').get_selected_entry()
+        require('telescope.actions').close(prompt_bufnr)
+        if selection then
+          pcall(vim.cmd, 'Bdelete ' .. selection.bufnr)
+        end
+      end)
+      return true
+    end,
+  })
+end, { desc = 'Pick buffer to delete' })
 
 -- Octo Githut Shortcuts
 vim.keymap.set('n', '<leader>ghil', ':Octo issue list<CR>', { desc = 'List issues' })
